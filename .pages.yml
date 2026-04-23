@@ -9,9 +9,7 @@ content:
     label: 文章
     type: collection
     path: src/content/posts
-    filename:
-      template: "{slug}.md"
-      field: create
+    filename: "{fields.slug}.md"
     view:
       primary: title
       fields: [title, category, updatedAt, featured, draft]
@@ -87,9 +85,7 @@ content:
     label: 资源
     type: collection
     path: src/content/resources
-    filename:
-      template: "{slug}.md"
-      field: create
+    filename: "{fields.slug}.md"
     view:
       primary: title
       fields: [title, category, pricing, rating, updatedAt, featured, draft]
