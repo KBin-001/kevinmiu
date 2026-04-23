@@ -9,9 +9,15 @@ updatedAt: "2026-04-23"
 featured: false
 draft: false
 url: "https://pages.cloudflare.com/"
+summary: "适合个人静态站低成本部署，Git 推送后自动构建发布。"
 pricing: "freemium"
 platforms: ["Web"]
 rating: 4
+official: true
+language: "en"
+license: "商业服务"
+alternatives: ["Netlify", "Vercel", "GitHub Pages"]
+status: "active"
 ---
 
 Cloudflare Pages 适合个人内容站早期部署。连接 Git 仓库后，推送代码即可触发构建和发布。

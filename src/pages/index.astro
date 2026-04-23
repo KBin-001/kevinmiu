@@ -3,7 +3,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import SearchBox from '@/components/SearchBox.astro';
 import CategoryNav from '@/components/CategoryNav.astro';
 import ArticleCard from '@/components/ArticleCard.astro';
-import { getAllContentItems, getAllTags } from '@/lib/content';
+import { formatDate, getAllContentItems, getAllTags } from '@/lib/content';
 import { categories, getCategoryName } from '@/lib/taxonomy';
 
 const items = await getAllContentItems();
@@ -11,11 +11,46 @@ const featured = items.filter((item) => item.featured).slice(0, 4);
 const latest = items.slice(0, 8);
 const tags = getAllTags(items).slice(0, 14);
 const resourceItems = items.filter((item) => item.kind === 'resource').slice(0, 6);
-const postItems = items.filter((item) => item.kind === 'post').slice(0, 5);
+const postItems = items.filter((item) => item.kind === 'post').slice(0, 6);
 const categoryStats = categories.map((category) => ({
   ...category,
   count: items.filter((item) => item.category === category.slug).length
 }));
+const sectionDefinitions = [
+  {
+    slug: 'benefits',
+    title: '资源福利',
+    description: '限免、免费领取、优惠活动和数字资源福利。',
+    empty: '资源福利内容正在整理，后续会优先补充限免、会员福利和免费资源。'
+  },
+  {
+    slug: 'software',
+    title: '软件工具',
+    description: '桌面软件、移动应用和效率工具推荐。',
+    empty: '软件工具内容正在整理。'
+  },
+  {
+    slug: 'dev-tools',
+    title: '开发工具',
+    description: '开发、部署、调试、搜索和工程效率工具。',
+    empty: '开发工具内容正在整理。'
+  },
+  {
+    slug: 'ai-tools',
+    title: 'AI 工具',
+    description: 'AI 写作、绘图、编程助手和模型平台。',
+    empty: 'AI 工具内容正在整理，后续会补充常用 AI 产品和使用场景。'
+  }
+].map((section) => ({
+  ...section,
+  items: items.filter((item) => item.category === section.slug).slice(0, 4)
+}));
+const tutorialAndNewsItems = items
+  .filter((item) => item.category === 'tutorials' || item.category === 'news')
+  .slice(0, 6);
+const resourceCount = items.filter((item) => item.kind === 'resource').length;
+const postCount = items.filter((item) => item.kind === 'post').length;
+const lastUpdated = latest[0]?.updatedAt;
 ---
 
 <BaseLayout>
@@ -23,7 +58,7 @@ const categoryStats = categories.map((category) => ({
     <div class="container hero-center">
       <p class="eyebrow">资源福利 · 软件工具 · 开发工具 · AI 工具 · 资讯动态</p>
       <h1>kevinmiu</h1>
-      <p>发现值得收藏的工具、资源与数字生活福利。</p>
+      <p>看山是山，看山不是山，再看山是山。</p>
       <SearchBox />
       <div class="hot-searches" aria-label="热门搜索">
         <span>热门：</span>
@@ -109,7 +144,57 @@ const categoryStats = categories.map((category) => ({
           }
         </div>
       </section>
+
+      <section class="side-panel">
+        <h2>更新统计</h2>
+        <div class="stats-grid">
+          <div>
+            <span>总内容</span>
+            <strong>{items.length}</strong>
+          </div>
+          <div>
+            <span>资源</span>
+            <strong>{resourceCount}</strong>
+          </div>
+          <div>
+            <span>文章</span>
+            <strong>{postCount}</strong>
+          </div>
+          <div>
+            <span>最近更新</span>
+            <strong>{lastUpdated ? formatDate(lastUpdated) : '暂无'}</strong>
+          </div>
+        </div>
+      </section>
     </aside>
+  </section>
+
+  <section class="container category-resource-stack">
+    {
+      sectionDefinitions.map((section) => (
+        <section class="home-category-section">
+          <div class="category-section-head">
+            <div>
+              <h2>{section.title}</h2>
+              <p>{section.description}</p>
+            </div>
+            <a href={`/category/${section.slug}/`}>查看全部</a>
+          </div>
+          {
+            section.items.length > 0 ? (
+              <div class="category-mini-grid">
+                {section.items.map((item) => <ArticleCard item={item} variant="compact" />)}
+              </div>
+            ) : (
+              <div class="category-empty">
+                <strong>建设中</strong>
+                <span>{section.empty}</span>
+              </div>
+            )
+          }
+        </section>
+      ))
+    }
   </section>
 
   <section class="container section-block">
@@ -118,9 +203,10 @@ const categoryStats = categories.map((category) => ({
         <h2>教程与资讯</h2>
         <p>把有用的经验沉淀成可搜索的内容。</p>
       </div>
+      <a href="/category/tutorials/">查看教程</a>
     </div>
     <div class="card-grid">
-      {postItems.map((item) => <ArticleCard item={item} />)}
+      {(tutorialAndNewsItems.length > 0 ? tutorialAndNewsItems : postItems).map((item) => <ArticleCard item={item} />)}
     </div>
   </section>
 </BaseLayout>

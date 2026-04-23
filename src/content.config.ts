@@ -24,9 +24,15 @@ const resources = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/resources' }),
   schema: commonSchema.extend({
     url: z.url().optional(),
+    summary: z.string().optional(),
     pricing: z.enum(['free', 'freemium', 'paid', 'open-source']).optional(),
     platforms: z.array(z.string()).default([]),
-    rating: z.number().min(1).max(5).optional()
+    rating: z.number().min(1).max(5).optional(),
+    official: z.boolean().default(true),
+    language: z.enum(['zh', 'en', 'multi', 'unknown']).default('unknown'),
+    license: z.string().optional(),
+    alternatives: z.array(z.string()).default([]),
+    status: z.enum(['active', 'limited', 'deprecated', 'unavailable']).default('active')
   })
 });
 
