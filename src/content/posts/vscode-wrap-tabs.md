@@ -1,6 +1,6 @@
 ---
 title: VSCODE 多行显示
-slug: embedded-web-stack
+slug: vscode-wrap-tabs
 description: VSCODE 多行显示的操作
 category: dev-tools
 tags:

@@ -863,6 +863,33 @@ input {
   font-size: 0.92em;
 }
 
+.prose pre {
+  overflow-x: auto;
+  margin: 18px 0 26px;
+  border: 1px solid #1f2a37;
+  border-radius: 8px;
+  background: #111827;
+  padding: 18px 20px;
+  color: #e5e7eb;
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.prose pre code {
+  display: block;
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  white-space: pre;
+}
+
+.prose pre code span {
+  background: transparent !important;
+}
+
 .resource-action {
   margin: 8px 0 24px;
 }
