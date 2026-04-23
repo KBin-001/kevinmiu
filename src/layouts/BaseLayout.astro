@@ -7,11 +7,11 @@ type Props = {
   description?: string;
 };
 
-const siteName = 'Kevin 资源导航';
-const title = Astro.props.title ? `${Astro.props.title} | ${siteName}` : `${siteName} | 优质资源与实用内容导航`;
+const siteName = 'kevinmiu';
+const title = Astro.props.title ? `${Astro.props.title} | ${siteName}` : `${siteName} | 实用资源与工具导航`;
 const description =
   Astro.props.description ??
-  '面向独立开发者、嵌入式工程师和效率用户的资源导航、软件推荐、教程文章和内容索引。';
+  'kevinmiu 收录实用资源、软件工具、开发资源、福利活动、教程文章和优质网站。';
 const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://example.com').toString();
 ---
 
@@ -38,7 +38,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://example.com
     </main>
     <footer class="site-footer">
       <div class="container footer-inner">
-        <p>© {new Date().getFullYear()} Kevin 资源导航</p>
+        <p>© {new Date().getFullYear()} kevinmiu</p>
         <a href="/about/">关于本站</a>
       </div>
     </footer>
