@@ -1,6 +1,6 @@
 ---
 title: 指令速查手册
-slug: embedded-web-stack
+slug: 指令速查手册
 description: 指令速查手册
 category: dev-tools
 tags:
