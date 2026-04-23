@@ -638,11 +638,22 @@ input {
   font-size: 18px;
 }
 
-.notice-panel p {
+.notice-panel {
+  padding: 16px;
+}
+
+.notice-content {
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: #f9fafb;
+  padding: 13px;
+}
+
+.notice-content p {
   margin: 0;
   color: var(--muted);
   font-size: 14px;
-  line-height: 1.65;
+  line-height: 1.75;
 }
 
 .side-list,
@@ -706,11 +717,34 @@ input {
   gap: 10px;
 }
 
+.stats-panel {
+  border-color: rgba(225, 29, 72, 0.22);
+  background:
+    linear-gradient(#fff, #fff) padding-box,
+    linear-gradient(135deg, rgba(225, 29, 72, 0.42), rgba(37, 99, 235, 0.28)) border-box;
+  box-shadow: 0 16px 36px rgba(225, 29, 72, 0.08);
+}
+
+.stats-panel h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stats-panel h2::before {
+  content: "";
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: var(--accent);
+  box-shadow: 0 0 0 5px var(--accent-soft);
+}
+
 .stats-grid div {
   min-width: 0;
-  border: 1px solid var(--line);
+  border: 1px solid rgba(225, 29, 72, 0.14);
   border-radius: 7px;
-  background: #f9fafb;
+  background: #fff7f8;
   padding: 11px;
 }
 

@@ -105,9 +105,33 @@ const lastUpdated = latest[0]?.updatedAt;
       </div>
     </div>
     <aside class="home-sidebar">
+      <section class="side-panel stats-panel">
+        <h2>更新统计</h2>
+        <div class="stats-grid">
+          <div>
+            <span>总内容</span>
+            <strong>{items.length}</strong>
+          </div>
+          <div>
+            <span>资源</span>
+            <strong>{resourceCount}</strong>
+          </div>
+          <div>
+            <span>文章</span>
+            <strong>{postCount}</strong>
+          </div>
+          <div>
+            <span>最近更新</span>
+            <strong>{lastUpdated ? formatDate(lastUpdated) : '暂无'}</strong>
+          </div>
+        </div>
+      </section>
+
       <section class="side-panel notice-panel">
         <h2>站点公告</h2>
-        <p>kevinmiu 正在补充资源福利、软件工具、开发工具、AI 工具和资讯动态内容。</p>
+        <div class="notice-content">
+          <p>kevinmiu 正在补充资源福利、软件工具、开发工具、AI 工具和资讯动态内容。</p>
+        </div>
       </section>
 
       <section class="side-panel">
@@ -145,27 +169,6 @@ const lastUpdated = latest[0]?.updatedAt;
         </div>
       </section>
 
-      <section class="side-panel">
-        <h2>更新统计</h2>
-        <div class="stats-grid">
-          <div>
-            <span>总内容</span>
-            <strong>{items.length}</strong>
-          </div>
-          <div>
-            <span>资源</span>
-            <strong>{resourceCount}</strong>
-          </div>
-          <div>
-            <span>文章</span>
-            <strong>{postCount}</strong>
-          </div>
-          <div>
-            <span>最近更新</span>
-            <strong>{lastUpdated ? formatDate(lastUpdated) : '暂无'}</strong>
-          </div>
-        </div>
-      </section>
     </aside>
   </section>
 
