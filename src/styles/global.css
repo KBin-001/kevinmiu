@@ -98,46 +98,21 @@ input {
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   color: #111827;
   font-size: 24px;
   font-weight: 900;
   white-space: nowrap;
 }
 
-.brand-mark {
-  position: relative;
-  display: inline-block;
-  width: 38px;
-  height: 38px;
-  border-radius: 999px;
-  background:
-    radial-gradient(circle at 68% 32%, #fff 0 8%, transparent 9%),
-    linear-gradient(135deg, #fb7185, #e11d48 48%, #7c3aed);
+.brand-logo {
+  width: 54px;
+  height: 54px;
+  object-fit: cover;
+  border-radius: 13px;
   box-shadow:
-    0 10px 24px rgba(225, 29, 72, 0.28),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.38);
-}
-
-.brand-mark span {
-  position: absolute;
-  border-radius: 999px;
-  background: #fff;
-  box-shadow: 0 4px 12px rgba(127, 29, 29, 0.18);
-}
-
-.brand-mark span:first-child {
-  width: 13px;
-  height: 13px;
-  left: 9px;
-  top: 9px;
-}
-
-.brand-mark span:last-child {
-  width: 9px;
-  height: 9px;
-  right: 10px;
-  bottom: 10px;
+    0 12px 26px rgba(2, 6, 23, 0.18),
+    0 0 0 1px rgba(15, 23, 42, 0.08);
 }
 
 .primary-nav {
