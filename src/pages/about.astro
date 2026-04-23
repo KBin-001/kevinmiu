@@ -1,0 +1,25 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="关于本站" description="了解 Kevin 资源导航的内容范围、收录原则和维护方式。">
+  <section class="container article-shell">
+    <header class="article-header">
+      <p class="eyebrow">About</p>
+      <h1>关于本站</h1>
+      <p>这里是一个面向长期维护的资源导航和内容发布站。</p>
+    </header>
+    <div class="prose">
+      <h2>内容范围</h2>
+      <p>本站收录软件工具、开发资源、教程文章、资源合集和高质量网站入口。</p>
+      <h2>收录原则</h2>
+      <ul>
+        <li>优先收录长期可用、说明清楚、来源明确的资源。</li>
+        <li>避免堆砌无说明链接，每个资源尽量补充使用场景和取舍。</li>
+        <li>文章和资源都会维护分类、标签和更新时间，方便搜索引擎和用户检索。</li>
+      </ul>
+      <h2>技术说明</h2>
+      <p>本站使用 Astro 静态生成，内容通过 Markdown 管理，搜索由 Pagefind 在构建后生成索引。</p>
+    </div>
+  </section>
+</BaseLayout>

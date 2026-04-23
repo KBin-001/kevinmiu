@@ -1,0 +1,60 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import SearchBox from '@/components/SearchBox.astro';
+import CategoryNav from '@/components/CategoryNav.astro';
+import ArticleCard from '@/components/ArticleCard.astro';
+import { getAllContentItems, getAllTags } from '@/lib/content';
+
+const items = await getAllContentItems();
+const featured = items.filter((item) => item.featured).slice(0, 4);
+const latest = items.slice(0, 8);
+const tags = getAllTags(items).slice(0, 14);
+---
+
+<BaseLayout>
+  <section class="hero">
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow">资源导航 · 内容发布 · 分类标签 · SEO</p>
+        <h1>把好用的软件、网站和教程整理成可检索的知识入口</h1>
+        <p>
+          聚合独立开发、嵌入式、效率工具和实用网站资源，适合长期更新、搜索和收藏。
+        </p>
+        <SearchBox />
+      </div>
+      <aside class="hero-panel" aria-label="推荐内容">
+        <h2>推荐内容</h2>
+        <div class="feature-list">
+          {
+            featured.map((item) => (
+              <a href={item.url}>
+                <strong>{item.title}</strong>
+                <span>{item.description}</span>
+              </a>
+            ))
+          }
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <CategoryNav />
+
+  <section class="container section-block split-layout">
+    <div>
+      <div class="section-heading">
+        <h2>最新更新</h2>
+        <p>按更新时间排序，方便持续追踪新增资源和文章。</p>
+      </div>
+      <div class="card-grid">
+        {latest.map((item) => <ArticleCard item={item} />)}
+      </div>
+    </div>
+    <aside class="sidebar">
+      <h2>热门标签</h2>
+      <div class="tag-cloud">
+        {tags.map((tag) => <a href={`/tag/${encodeURIComponent(tag)}/`}>{tag}</a>)}
+      </div>
+    </aside>
+  </section>
+</BaseLayout>

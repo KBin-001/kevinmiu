@@ -1,0 +1,31 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import ArticleCard from '@/components/ArticleCard.astro';
+import { getAllContentItems, getAllTags } from '@/lib/content';
+
+const allItems = await getAllContentItems();
+
+export async function getStaticPaths() {
+  const items = await getAllContentItems();
+  return getAllTags(items).map((tag) => ({
+    params: { slug: tag },
+    props: { tag }
+  }));
+}
+
+const { tag } = Astro.props;
+const items = allItems.filter((item) => item.tags.includes(tag));
+---
+
+<BaseLayout title={`标签：${tag}`} description={`查看 ${tag} 标签下的资源和文章。`}>
+  <section class="container page-head">
+    <p class="eyebrow">标签</p>
+    <h1>#{tag}</h1>
+    <p>共收录 {items.length} 篇相关内容。</p>
+  </section>
+  <section class="container section-block">
+    <div class="card-grid">
+      {items.map((item) => <ArticleCard item={item} />)}
+    </div>
+  </section>
+</BaseLayout>

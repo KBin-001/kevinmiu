@@ -1,0 +1,43 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import SearchBox from '@/components/SearchBox.astro';
+---
+
+<BaseLayout title="站内搜索" description="搜索本站收录的软件资源、实用网站、教程文章和标签。">
+  <section class="container page-head">
+    <p class="eyebrow">搜索</p>
+    <h1>站内搜索</h1>
+    <p>输入关键词，快速定位资源、教程、分类和标签。</p>
+    <SearchBox compact />
+  </section>
+  <section class="container section-block">
+    <div id="search"></div>
+    <noscript>
+      <p class="empty-state">搜索功能需要启用 JavaScript。</p>
+    </noscript>
+  </section>
+  <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+  <script is:inline src="/pagefind/pagefind-ui.js"></script>
+  <script is:inline>
+    const params = new URLSearchParams(window.location.search);
+    const query = params.get('q') ?? '';
+    new window.PagefindUI({
+      element: '#search',
+      showSubResults: true,
+      showImages: false,
+      translations: {
+        placeholder: '搜索本站内容'
+      }
+    });
+
+    if (query) {
+      window.setTimeout(() => {
+        const input = document.querySelector('.pagefind-ui__search-input');
+        if (input instanceof HTMLInputElement) {
+          input.value = query;
+          input.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+      }, 100);
+    }
+  </script>
+</BaseLayout>

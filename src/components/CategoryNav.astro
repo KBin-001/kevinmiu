@@ -1,0 +1,22 @@
+---
+import { categories } from '@/lib/taxonomy';
+---
+
+<section class="container section-block">
+  <div class="section-heading">
+    <h2>分类导航</h2>
+    <p>按使用场景整理内容入口，先找到方向，再进入具体资源。</p>
+  </div>
+  <div class="category-grid">
+    {
+      categories
+        .sort((a, b) => a.order - b.order)
+        .map((category) => (
+          <a class="category-card" href={`/category/${category.slug}/`}>
+            <strong>{category.name}</strong>
+            <span>{category.description}</span>
+          </a>
+        ))
+    }
+  </div>
+</section>
