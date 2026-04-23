@@ -1,0 +1,33 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="内容后台" description="kevinmiu 的内容后台入口和发文说明。">
+  <section class="container article-shell">
+    <header class="article-header">
+      <p class="eyebrow">Admin</p>
+      <h1>内容后台</h1>
+      <p>通过 Pages CMS 编辑文章和资源，保存后会提交到 GitHub，并触发 Cloudflare Pages 自动发布。</p>
+    </header>
+    <div class="prose">
+      <p>
+        <a class="primary-link" href="https://app.pagescms.org/" target="_blank" rel="noreferrer">打开 Pages CMS</a>
+      </p>
+      <h2>使用流程</h2>
+      <ol>
+        <li>用 GitHub 登录 Pages CMS。</li>
+        <li>选择 kevinmiu 对应的 GitHub 仓库。</li>
+        <li>进入“文章”或“资源”集合。</li>
+        <li>新建内容，填写标题、slug、分类、标签、时间和正文。</li>
+        <li>保存后等待 Cloudflare Pages 自动部署。</li>
+      </ol>
+      <h2>发布规则</h2>
+      <ul>
+        <li><code>draft: true</code> 是草稿，不会发布。</li>
+        <li><code>draft: false</code> 才会出现在网站。</li>
+        <li><code>featured: true</code> 会进入首页推荐区，不要全部内容都开启。</li>
+        <li><code>slug</code> 用英文小写和短横线，例如 <code>windows-tools</code>。</li>
+      </ul>
+    </div>
+  </section>
+</BaseLayout>
