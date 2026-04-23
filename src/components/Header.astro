@@ -3,13 +3,22 @@ import { categories } from '@/lib/taxonomy';
 ---
 
 <header class="site-header">
+  <div class="top-strip">
+    <div class="container top-strip-inner">
+      <span>每日更新实用工具、福利资源、开发资讯</span>
+      <nav aria-label="快捷入口">
+        <a href="/search/">站内搜索</a>
+        <a href="/about/">收录说明</a>
+      </nav>
+    </div>
+  </div>
   <div class="container nav-bar">
     <a class="brand" href="/" aria-label="返回首页">
       <span class="brand-mark">K</span>
       <span>kevinmiu</span>
     </a>
     <nav class="primary-nav" aria-label="主导航">
-      {categories.slice(0, 5).map((category) => <a href={`/category/${category.slug}/`}>{category.name}</a>)}
+      {categories.map((category) => <a href={`/category/${category.slug}/`}>{category.name}</a>)}
       <a href="/search/">搜索</a>
       <a href="/about/">关于</a>
     </nav>

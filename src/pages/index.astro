@@ -4,57 +4,123 @@ import SearchBox from '@/components/SearchBox.astro';
 import CategoryNav from '@/components/CategoryNav.astro';
 import ArticleCard from '@/components/ArticleCard.astro';
 import { getAllContentItems, getAllTags } from '@/lib/content';
+import { categories, getCategoryName } from '@/lib/taxonomy';
 
 const items = await getAllContentItems();
 const featured = items.filter((item) => item.featured).slice(0, 4);
 const latest = items.slice(0, 8);
 const tags = getAllTags(items).slice(0, 14);
+const resourceItems = items.filter((item) => item.kind === 'resource').slice(0, 6);
+const postItems = items.filter((item) => item.kind === 'post').slice(0, 5);
+const categoryStats = categories.map((category) => ({
+  ...category,
+  count: items.filter((item) => item.category === category.slug).length
+}));
 ---
 
 <BaseLayout>
-  <section class="hero">
-    <div class="container hero-grid">
-      <div class="hero-copy">
-        <p class="eyebrow">资源福利 · 开发工具 · 软件应用 · 实用资讯</p>
-        <h1>发现值得收藏的工具、资源与数字生活福利</h1>
-        <p>
-          kevinmiu 收录实用资源、开发工具、效率软件、网站导航、福利活动和教程资讯，适合长期搜索和收藏。
-        </p>
-        <SearchBox />
+  <section class="home-hero">
+    <div class="container hero-center">
+      <p class="eyebrow">资源福利 · 软件工具 · 开发工具 · AI 工具 · 资讯动态</p>
+      <h1>kevinmiu</h1>
+      <p>发现值得收藏的工具、资源与数字生活福利。</p>
+      <SearchBox />
+      <div class="hot-searches" aria-label="热门搜索">
+        <span>热门：</span>
+        {tags.slice(0, 8).map((tag) => <a href={`/tag/${encodeURIComponent(tag)}/`}>{tag}</a>)}
       </div>
-      <aside class="hero-panel" aria-label="推荐内容">
-        <h2>推荐内容</h2>
-        <div class="feature-list">
-          {
-            featured.map((item) => (
-              <a href={item.url}>
-                <strong>{item.title}</strong>
-                <span>{item.description}</span>
-              </a>
-            ))
-          }
-        </div>
-      </aside>
     </div>
   </section>
 
   <CategoryNav />
 
-  <section class="container section-block split-layout">
-    <div>
-      <div class="section-heading">
-        <h2>最新更新</h2>
-        <p>按更新时间排序，方便持续追踪新增资源和文章。</p>
+  <section class="container section-block">
+    <div class="section-heading row-heading">
+      <div>
+        <h2>今日推荐</h2>
+        <p>优先展示值得先看的资源和教程。</p>
       </div>
-      <div class="card-grid">
-        {latest.map((item) => <ArticleCard item={item} />)}
+      <a href="/search/">更多资源</a>
+    </div>
+    <div class="feature-grid">
+      {
+        featured.map((item, index) => (
+          <a class="feature-card" href={item.url}>
+            <span class="feature-rank">0{index + 1}</span>
+            <strong>{item.title}</strong>
+            <p>{item.description}</p>
+            <em>{getCategoryName(item.category)}</em>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="container main-dashboard">
+    <div class="content-column">
+      <div class="section-heading row-heading">
+        <div>
+          <h2>最新更新</h2>
+          <p>按更新时间排序，持续追踪新增资源和文章。</p>
+        </div>
+        <span>{items.length} 条内容</span>
+      </div>
+      <div class="feed-list">
+        {latest.map((item) => <ArticleCard item={item} variant="compact" />)}
       </div>
     </div>
-    <aside class="sidebar">
-      <h2>热门标签</h2>
-      <div class="tag-cloud">
-        {tags.map((tag) => <a href={`/tag/${encodeURIComponent(tag)}/`}>{tag}</a>)}
-      </div>
+    <aside class="home-sidebar">
+      <section class="side-panel notice-panel">
+        <h2>站点公告</h2>
+        <p>kevinmiu 正在补充资源福利、软件工具、开发工具、AI 工具和资讯动态内容。</p>
+      </section>
+
+      <section class="side-panel">
+        <h2>分类索引</h2>
+        <div class="side-list">
+          {
+            categoryStats.map((category) => (
+              <a href={`/category/${category.slug}/`}>
+                <span>{category.name}</span>
+                <em>{category.count}</em>
+              </a>
+            ))
+          }
+        </div>
+      </section>
+
+      <section class="side-panel">
+        <h2>热门标签</h2>
+        <div class="tag-cloud">
+          {tags.map((tag) => <a href={`/tag/${encodeURIComponent(tag)}/`}>{tag}</a>)}
+        </div>
+      </section>
+
+      <section class="side-panel">
+        <h2>推荐资源</h2>
+        <div class="rank-list">
+          {
+            resourceItems.map((item, index) => (
+              <a href={item.url}>
+                <span>{index + 1}</span>
+                <strong>{item.title}</strong>
+              </a>
+            ))
+          }
+        </div>
+      </section>
     </aside>
+  </section>
+
+  <section class="container section-block">
+    <div class="section-heading row-heading">
+      <div>
+        <h2>教程与资讯</h2>
+        <p>把有用的经验沉淀成可搜索的内容。</p>
+      </div>
+    </div>
+    <div class="card-grid">
+      {postItems.map((item) => <ArticleCard item={item} />)}
+    </div>
   </section>
 </BaseLayout>

@@ -14,6 +14,7 @@ export type ContentItem = {
   updatedAt: Date;
   featured: boolean;
   url: string;
+  sourceUrl?: string;
 };
 
 export type PostEntry = CollectionEntry<'posts'>;
@@ -31,7 +32,8 @@ export function toContentItem(entry: PostEntry | ResourceEntry, kind: ContentKin
     publishedAt: entry.data.publishedAt,
     updatedAt: entry.data.updatedAt,
     featured: entry.data.featured,
-    url: kind === 'post' ? `/posts/${entry.data.slug}/` : `/resources/${entry.data.slug}/`
+    url: kind === 'post' ? `/posts/${entry.data.slug}/` : `/resources/${entry.data.slug}/`,
+    sourceUrl: kind === 'resource' ? (entry as ResourceEntry).data.url : undefined
   };
 }
 

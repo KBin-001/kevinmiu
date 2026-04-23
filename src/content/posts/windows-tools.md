@@ -2,7 +2,7 @@
 title: "Windows 装机后值得先安装的效率工具"
 slug: "windows-tools"
 description: "整理 Windows 新系统中最常用的搜索、压缩、截图、下载和开发辅助工具。"
-category: "collections"
+category: "tutorials"
 tags: ["Windows", "效率工具", "装机"]
 publishedAt: "2026-04-23"
 updatedAt: "2026-04-23"

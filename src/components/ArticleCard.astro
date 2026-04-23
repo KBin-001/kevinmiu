@@ -5,22 +5,37 @@ import { getCategoryName } from '@/lib/taxonomy';
 
 type Props = {
   item: ContentItem;
+  variant?: 'grid' | 'compact';
 };
 
 const item = Astro.props.item;
+const variant = Astro.props.variant ?? 'grid';
+const sourceDomain = item.sourceUrl ? new URL(item.sourceUrl).hostname.replace(/^www\./, '') : undefined;
+const iconUrl = sourceDomain ? `https://www.google.com/s2/favicons?domain=${sourceDomain}&sz=64` : undefined;
 ---
 
-<article class="content-card" data-pagefind-body>
-  <div class="card-meta">
-    <a href={`/category/${item.category}/`}>{getCategoryName(item.category)}</a>
-    <time datetime={item.updatedAt.toISOString()}>{formatDate(item.updatedAt)}</time>
-  </div>
-  <h3><a href={item.url}>{item.title}</a></h3>
-  <p>{item.description}</p>
-  <div class="card-footer">
-    <div class="tag-list mini">
-      {item.tags.slice(0, 3).map((tag) => <a href={`/tag/${encodeURIComponent(tag)}/`}>#{tag}</a>)}
+<article class:list={['content-card', `is-${variant}`]} data-pagefind-body>
+  <a class="card-icon" href={item.url} aria-label={item.title}>
+    {
+      iconUrl ? (
+        <img src={iconUrl} alt="" loading="lazy" decoding="async" />
+      ) : (
+        <span>{item.kind === 'post' ? '文' : '资'}</span>
+      )
+    }
+  </a>
+  <div class="card-body">
+    <div class="card-meta">
+      <a href={`/category/${item.category}/`}>{getCategoryName(item.category)}</a>
+      <time datetime={item.updatedAt.toISOString()}>{formatDate(item.updatedAt)}</time>
     </div>
-    <span class="kind-label">{item.kind === 'post' ? '文章' : '资源'}</span>
+    <h3><a href={item.url}>{item.title}</a></h3>
+    <p>{item.description}</p>
+    <div class="card-footer">
+      <div class="tag-list mini">
+        {item.tags.slice(0, 3).map((tag) => <a href={`/tag/${encodeURIComponent(tag)}/`}>#{tag}</a>)}
+      </div>
+      <span class="kind-label">{item.kind === 'post' ? '文章' : '资源'}</span>
+    </div>
   </div>
 </article>
