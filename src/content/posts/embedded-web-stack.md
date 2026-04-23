@@ -597,13 +597,5 @@ conda activate base
 
 ```
 
-### 7.4 API 环境变量
-
-```bash
-export ANTHROPIC_AUTH_TOKEN=sk-RPZKheczQGYogIFG79a3nyf6NdpdRZm9B8zxOShcUeV5oLo0
-export ANTHROPIC_BASE_URL=https://anyrouter.top
-
-```
-
 ---
 
