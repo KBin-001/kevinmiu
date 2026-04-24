@@ -1,7 +1,6 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import SearchBox from '@/components/SearchBox.astro';
-import CategoryNav from '@/components/CategoryNav.astro';
 import ArticleCard from '@/components/ArticleCard.astro';
 import { formatDate, getAllContentItems, getAllTags } from '@/lib/content';
 import { categories, getCategoryName } from '@/lib/taxonomy';
@@ -66,9 +65,6 @@ const lastUpdated = latest[0]?.updatedAt;
       </div>
     </div>
   </section>
-
-  <CategoryNav />
-
   <section class="container section-block">
     <div class="section-heading row-heading">
       <div>
