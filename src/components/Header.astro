@@ -2,6 +2,11 @@
 const pathname = Astro.url.pathname;
 
 const navItems = [
+  {
+    href: 'https://my.86hk.vip/#/pages/micro_store/index?agent_id=f00b5021698254bcb967e505d8255dd7',
+    label: '流量卡',
+    external: true
+  },
   { href: '/category/benefits/', label: '资源', match: '/category/benefits/' },
   { href: '/category/dev-tools/', label: '工具', match: '/category/dev-tools/' },
   { href: '/category/tutorials/', label: '文章', match: '/category/tutorials/' },
@@ -19,7 +24,13 @@ const navItems = [
     <nav class="primary-nav" aria-label="主导航">
       {
         navItems.map((item) => (
-          <a class:list={{ active: pathname.startsWith(item.match) }} href={item.href} aria-current={pathname.startsWith(item.match) ? 'page' : undefined}>
+          <a
+            class:list={{ active: item.match ? pathname.startsWith(item.match) : false }}
+            href={item.href}
+            target={item.external ? '_blank' : undefined}
+            rel={item.external ? 'noreferrer' : undefined}
+            aria-current={item.match && pathname.startsWith(item.match) ? 'page' : undefined}
+          >
             {item.label}
           </a>
         ))

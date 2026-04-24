@@ -379,6 +379,12 @@ svg {
   line-height: 0.98;
 }
 
+.hero-center h1 {
+  max-width: none;
+  font-size: clamp(34px, 5.2vw, 72px);
+  white-space: nowrap;
+}
+
 .hero-center h1 span {
   display: inline;
 }
@@ -1125,6 +1131,7 @@ svg {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+
   .category-grid,
   .resource-meta-grid,
   .stats-grid {
@@ -1142,11 +1149,11 @@ svg {
   }
 
   .hero-center h1 {
-    font-size: 42px;
+    font-size: clamp(24px, 7vw, 36px);
   }
 
   .hero-center h1 span {
-    display: block;
+    display: inline;
   }
 
   .hero-center h1 span + span {
@@ -1180,6 +1187,7 @@ svg {
     align-items: start;
     flex-direction: column;
   }
+
 
   .filter-tabs {
     justify-content: start;
