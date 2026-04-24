@@ -5,37 +5,37 @@ import { getCategoryName } from '@/lib/taxonomy';
 
 type Props = {
   item: ContentItem;
-  variant?: 'grid' | 'compact';
+  variant?: 'featured' | 'stream' | 'grid' | 'compact';
+  index?: number;
 };
 
 const item = Astro.props.item;
 const variant = Astro.props.variant ?? 'grid';
-const sourceDomain = item.sourceUrl ? new URL(item.sourceUrl).hostname.replace(/^www\./, '') : undefined;
-const iconUrl = sourceDomain ? `https://www.google.com/s2/favicons?domain=${sourceDomain}&sz=64` : undefined;
+const rank = Astro.props.index !== undefined ? String(Astro.props.index + 1).padStart(2, '0') : undefined;
+const kindLabel = item.kind === 'post' ? '文章' : '资源';
 ---
 
-<article class:list={['content-card', `is-${variant}`]} data-pagefind-body>
-  <a class="card-icon" href={item.url} aria-label={item.title}>
-    {
-      iconUrl ? (
-        <img src={iconUrl} alt="" loading="lazy" decoding="async" />
-      ) : (
-        <span>{item.kind === 'post' ? '文' : '资'}</span>
-      )
-    }
-  </a>
+<article class:list={['content-card', `is-${variant}`]} data-category={item.category} data-kind={item.kind} data-pagefind-body>
+  {rank && <span class="card-rank" aria-hidden="true">{rank}</span>}
   <div class="card-body">
     <div class="card-meta">
-      <a href={`/category/${item.category}/`}>{getCategoryName(item.category)}</a>
+      <a class="category-chip" href={`/category/${item.category}/`}>{getCategoryName(item.category)}</a>
+      <span>{kindLabel}</span>
+      <span aria-hidden="true">·</span>
       <time datetime={item.updatedAt.toISOString()}>{formatDate(item.updatedAt)}</time>
     </div>
     <h3><a href={item.url}>{item.title}</a></h3>
     <p>{item.description}</p>
     <div class="card-footer">
       <div class="tag-list mini">
-        {item.tags.slice(0, 3).map((tag) => <a href={`/tag/${encodeURIComponent(tag)}/`}>#{tag}</a>)}
+        {item.tags.slice(0, 3).map((tag) => <a href={`/tag/${encodeURIComponent(tag)}/`}>{tag}</a>)}
       </div>
-      <span class="kind-label">{item.kind === 'post' ? '文章' : '资源'}</span>
+      <a class="card-arrow" href={item.url} aria-label={`阅读 ${item.title}`}>
+        <span>查看</span>
+        <svg aria-hidden="true" viewBox="0 0 24 24">
+          <path d="M5 12h14m-6-6 6 6-6 6" />
+        </svg>
+      </a>
     </div>
   </div>
 </article>

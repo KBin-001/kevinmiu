@@ -2,210 +2,125 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import SearchBox from '@/components/SearchBox.astro';
 import ArticleCard from '@/components/ArticleCard.astro';
-import { formatDate, getAllContentItems, getAllTags } from '@/lib/content';
-import { categories, getCategoryName } from '@/lib/taxonomy';
+import { getAllContentItems, getAllTags } from '@/lib/content';
 
 const items = await getAllContentItems();
-const featured = items.filter((item) => item.featured).slice(0, 4);
-const latest = items.slice(0, 8);
-const tags = getAllTags(items).slice(0, 14);
-const resourceItems = items.filter((item) => item.kind === 'resource').slice(0, 6);
-const postItems = items.filter((item) => item.kind === 'post').slice(0, 6);
-const categoryStats = categories.map((category) => ({
-  ...category,
-  count: items.filter((item) => item.category === category.slug).length
-}));
-const sectionDefinitions = [
-  {
-    slug: 'benefits',
-    title: '资源福利',
-    description: '限免、免费领取、优惠活动和数字资源福利。',
-    empty: '资源福利内容正在整理，后续会优先补充限免、会员福利和免费资源。'
-  },
-  {
-    slug: 'software',
-    title: '软件工具',
-    description: '桌面软件、移动应用和效率工具推荐。',
-    empty: '软件工具内容正在整理。'
-  },
-  {
-    slug: 'dev-tools',
-    title: '开发工具',
-    description: '开发、部署、调试、搜索和工程效率工具。',
-    empty: '开发工具内容正在整理。'
-  },
-  {
-    slug: 'ai-tools',
-    title: 'AI 工具',
-    description: 'AI 写作、绘图、编程助手和模型平台。',
-    empty: 'AI 工具内容正在整理，后续会补充常用 AI 产品和使用场景。'
-  }
-].map((section) => ({
-  ...section,
-  items: items.filter((item) => item.category === section.slug).slice(0, 4)
-}));
-const tutorialAndNewsItems = items
-  .filter((item) => item.category === 'tutorials' || item.category === 'news')
-  .slice(0, 6);
-const resourceCount = items.filter((item) => item.kind === 'resource').length;
-const postCount = items.filter((item) => item.kind === 'post').length;
-const lastUpdated = latest[0]?.updatedAt;
+const featuredItems = items.filter((item) => item.featured).slice(0, 3);
+const featured = featuredItems.length > 0 ? featuredItems : items.slice(0, 3);
+const featuredUrls = new Set(featured.map((item) => item.url));
+const latest = items.filter((item) => !featuredUrls.has(item.url)).slice(0, 8);
+const tags = getAllTags(items).slice(0, 5);
 ---
 
 <BaseLayout>
   <section class="home-hero">
+    <div class="hero-glow" aria-hidden="true"></div>
     <div class="container hero-center">
-      <p class="eyebrow">资源福利 · 软件工具 · 开发工具 · AI 工具 · 资讯动态</p>
-      <h1>kevinmiu</h1>
-      <p>看山是山，看山不是山，再看山是山。</p>
+      <p class="eyebrow">Curated tools for builders</p>
+      <h1><span>每日更新的</span><span>开发者资源库</span></h1>
+      <p>工具、教程、福利和网站导航，一站速查，快速找到值得收藏的资源。</p>
       <SearchBox />
       <div class="hot-searches" aria-label="热门搜索">
         <span>热门：</span>
-        {tags.slice(0, 8).map((tag) => <a href={`/tag/${encodeURIComponent(tag)}/`}>{tag}</a>)}
+        {tags.map((tag) => <a href={`/tag/${encodeURIComponent(tag)}/`}>#{tag}</a>)}
       </div>
     </div>
   </section>
-  <section class="container section-block">
+
+  <section class="container section-block featured-section">
     <div class="section-heading row-heading">
       <div>
+        <p class="section-kicker">Editor's picks</p>
         <h2>今日推荐</h2>
-        <p>优先展示值得先看的资源和教程。</p>
       </div>
-      <a href="/search/">更多资源</a>
+      <a class="section-more" href="/search/">更多资源</a>
     </div>
     <div class="feature-grid">
-      {
-        featured.map((item, index) => (
-          <a class="feature-card" href={item.url}>
-            <span class="feature-rank">0{index + 1}</span>
-            <strong>{item.title}</strong>
-            <p>{item.description}</p>
-            <em>{getCategoryName(item.category)}</em>
-          </a>
-        ))
-      }
+      {featured.map((item, index) => <ArticleCard item={item} variant="featured" index={index} />)}
     </div>
   </section>
 
-  <section class="container main-dashboard">
-    <div class="content-column">
-      <div class="section-heading row-heading">
-        <div>
-          <h2>最新更新</h2>
-          <p>按更新时间排序，持续追踪新增资源和文章。</p>
-        </div>
-        <span>{items.length} 条内容</span>
+  <section id="latest" class="container section-block latest-section">
+    <div class="section-heading row-heading">
+      <div>
+        <p class="section-kicker">Latest feed</p>
+        <h2>最新内容</h2>
       </div>
-      <div class="feed-list">
-        {latest.map((item) => <ArticleCard item={item} variant="compact" />)}
+      <div class="filter-tabs" aria-label="内容筛选" data-filter-tabs>
+        <button type="button" class="is-active" data-filter="all">全部</button>
+        <button type="button" data-filter="dev-tools">工具</button>
+        <button type="button" data-filter="post">文章</button>
+        <button type="button" data-filter="websites">导航</button>
       </div>
     </div>
-    <aside class="home-sidebar">
-      <section class="side-panel stats-panel">
-        <h2>更新统计</h2>
-        <div class="stats-grid">
-          <div>
-            <span>总内容</span>
-            <strong>{items.length}</strong>
-          </div>
-          <div>
-            <span>资源</span>
-            <strong>{resourceCount}</strong>
-          </div>
-          <div>
-            <span>文章</span>
-            <strong>{postCount}</strong>
-          </div>
-          <div>
-            <span>最近更新</span>
-            <strong>{lastUpdated ? formatDate(lastUpdated) : '暂无'}</strong>
-          </div>
-        </div>
-      </section>
-
-      <section class="side-panel notice-panel">
-        <h2>站点公告</h2>
-        <div class="notice-content">
-          <p>kevinmiu 正在补充资源福利、软件工具、开发工具、AI 工具和资讯动态内容。</p>
-        </div>
-      </section>
-
-      <section class="side-panel">
-        <h2>分类索引</h2>
-        <div class="side-list">
-          {
-            categoryStats.map((category) => (
-              <a href={`/category/${category.slug}/`}>
-                <span>{category.name}</span>
-                <em>{category.count}</em>
-              </a>
-            ))
-          }
-        </div>
-      </section>
-
-      <section class="side-panel">
-        <h2>热门标签</h2>
-        <div class="tag-cloud">
-          {tags.map((tag) => <a href={`/tag/${encodeURIComponent(tag)}/`}>{tag}</a>)}
-        </div>
-      </section>
-
-      <section class="side-panel">
-        <h2>推荐资源</h2>
-        <div class="rank-list">
-          {
-            resourceItems.map((item, index) => (
-              <a href={item.url}>
-                <span>{index + 1}</span>
-                <strong>{item.title}</strong>
-              </a>
-            ))
-          }
-        </div>
-      </section>
-
-    </aside>
-  </section>
-
-  <section class="container category-resource-stack">
     {
-      sectionDefinitions.map((section) => (
-        <section class="home-category-section">
-          <div class="category-section-head">
-            <div>
-              <h2>{section.title}</h2>
-              <p>{section.description}</p>
-            </div>
-            <a href={`/category/${section.slug}/`}>查看全部</a>
+      latest.length > 0 ? (
+        <>
+          <div class="card-grid latest-grid" data-filter-grid>
+            {latest.map((item) => <ArticleCard item={item} variant="stream" />)}
           </div>
-          {
-            section.items.length > 0 ? (
-              <div class="category-mini-grid">
-                {section.items.map((item) => <ArticleCard item={item} variant="compact" />)}
-              </div>
-            ) : (
-              <div class="category-empty">
-                <strong>建设中</strong>
-                <span>{section.empty}</span>
-              </div>
-            )
-          }
-        </section>
-      ))
+          <div class="empty-state latest-empty" data-filter-empty hidden>
+            <div class="empty-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M4 7.5A2.5 2.5 0 0 1 6.5 5h11A2.5 2.5 0 0 1 20 7.5v9A2.5 2.5 0 0 1 17.5 19h-11A2.5 2.5 0 0 1 4 16.5v-9Z" />
+                <path d="M8 9h8M8 13h5" />
+              </svg>
+            </div>
+            <div>
+              <strong>当前分类暂无内容</strong>
+              <span>可以先查看全部内容，后续新增资源会自动出现在这里。</span>
+            </div>
+            <button type="button" data-filter-reset>查看全部内容</button>
+          </div>
+        </>
+      ) : (
+        <div class="empty-state latest-empty">
+          <div class="empty-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M4 7.5A2.5 2.5 0 0 1 6.5 5h11A2.5 2.5 0 0 1 20 7.5v9A2.5 2.5 0 0 1 17.5 19h-11A2.5 2.5 0 0 1 4 16.5v-9Z" />
+              <path d="M8 9h8M8 13h5" />
+            </svg>
+          </div>
+          <div>
+            <strong>暂无更多最新内容</strong>
+            <span>当前示例内容已经全部展示。</span>
+          </div>
+        </div>
+      )
     }
   </section>
 
-  <section class="container section-block">
-    <div class="section-heading row-heading">
-      <div>
-        <h2>教程与资讯</h2>
-        <p>把有用的经验沉淀成可搜索的内容。</p>
-      </div>
-      <a href="/category/tutorials/">查看教程</a>
-    </div>
-    <div class="card-grid">
-      {(tutorialAndNewsItems.length > 0 ? tutorialAndNewsItems : postItems).map((item) => <ArticleCard item={item} />)}
-    </div>
-  </section>
+  <script is:inline>
+    const tabRoot = document.querySelector('[data-filter-tabs]');
+    const grid = document.querySelector('[data-filter-grid]');
+    const empty = document.querySelector('[data-filter-empty]');
+    const reset = document.querySelector('[data-filter-reset]');
+    const tabs = Array.from(tabRoot?.querySelectorAll('[data-filter]') ?? []);
+    const cards = Array.from(grid?.querySelectorAll('[data-category]') ?? []);
+
+    function applyFilter(filter) {
+      let visibleCount = 0;
+      cards.forEach((card) => {
+        const category = card.getAttribute('data-category');
+        const kind = card.getAttribute('data-kind');
+        const visible = filter === 'all' || category === filter || kind === filter;
+        card.toggleAttribute('hidden', !visible);
+        if (visible) visibleCount += 1;
+      });
+      empty?.toggleAttribute('hidden', visibleCount !== 0);
+    }
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        tabs.forEach((item) => item.classList.toggle('is-active', item === tab));
+        applyFilter(tab.getAttribute('data-filter') ?? 'all');
+      });
+    });
+
+    reset?.addEventListener('click', () => {
+      const allTab = tabs.find((tab) => tab.getAttribute('data-filter') === 'all');
+      tabs.forEach((item) => item.classList.toggle('is-active', item === allTab));
+      applyFilter('all');
+    });
+  </script>
 </BaseLayout>
