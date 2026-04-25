@@ -1,6 +1,6 @@
 ---
 title: "[MTK]DSI 动态刷新率的设置"
-slug: "[MTK]DSI 动态刷新率的设置"
+slug: mtk-dsi-refresh-rate
 description: "[MTK]DSI 动态刷新率的设置"
 category: tutorials
 tags:

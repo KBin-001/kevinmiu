@@ -1,11 +1,12 @@
 ---
 import { getCollection, render } from 'astro:content';
 import ArticleLayout from '@/layouts/ArticleLayout.astro';
+import { getEntryRouteSlug } from '@/lib/content';
 
 export async function getStaticPaths() {
   const posts = await getCollection('posts', ({ data }) => !data.draft);
   return posts.map((entry) => ({
-    params: { slug: entry.data.slug },
+    params: { slug: getEntryRouteSlug(entry) },
     props: { entry }
   }));
 }

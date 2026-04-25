@@ -20,7 +20,24 @@ export type ContentItem = {
 export type PostEntry = CollectionEntry<'posts'>;
 export type ResourceEntry = CollectionEntry<'resources'>;
 
+export function getEntryRouteSlug(entry: PostEntry | ResourceEntry) {
+  const declaredSlug = entry.data.slug?.trim();
+  const fileSlug = entry.id
+    .replace(/\.(md|mdx)$/i, '')
+    .split(/[\\/]/)
+    .filter(Boolean)
+    .pop();
+
+  if (declaredSlug && !/[/?#]/.test(declaredSlug)) {
+    return declaredSlug;
+  }
+
+  return fileSlug ?? declaredSlug;
+}
+
 export function toContentItem(entry: PostEntry | ResourceEntry, kind: ContentKind): ContentItem {
+  const routeSlug = getEntryRouteSlug(entry);
+
   return {
     id: entry.id,
     kind,
@@ -32,7 +49,7 @@ export function toContentItem(entry: PostEntry | ResourceEntry, kind: ContentKin
     publishedAt: entry.data.publishedAt,
     updatedAt: entry.data.updatedAt,
     featured: entry.data.featured,
-    url: kind === 'post' ? `/posts/${entry.data.slug}/` : `/resources/${entry.data.slug}/`,
+    url: kind === 'post' ? `/posts/${routeSlug}/` : `/resources/${routeSlug}/`,
     sourceUrl: kind === 'resource' ? (entry as ResourceEntry).data.url : undefined
   };
 }

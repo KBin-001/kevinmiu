@@ -1,6 +1,6 @@
 ---
 title: "[MTK]去除功放音效文件"
-slug: "[MTK]去除功放音效文件"
+slug: mtk-remove-audio-effect
 description: "[MTK]去除功放音效文件"
 category: tutorials
 tags:

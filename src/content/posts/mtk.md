@@ -1,6 +1,6 @@
 ---
 title: "[MTK]马达驱动配置"
-slug: "[MTK]马达驱动配置"
+slug: mtk-vibrator-driver
 description: "[MTK]马达驱动配置"
 category: tutorials
 tags:
