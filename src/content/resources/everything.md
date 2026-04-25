@@ -9,15 +9,6 @@ updatedAt: "2026-04-23"
 featured: true
 draft: false
 url: "https://www.voidtools.com/"
-summary: "Windows 本地文件名搜索速度很快，适合高频查找项目和素材文件。"
-pricing: "free"
-platforms: ["Windows"]
-rating: 5
-official: true
-language: "multi"
-license: "免费软件"
-alternatives: ["Listary", "Wox", "Flow Launcher"]
-status: "active"
 ---
 
 Everything 适合需要频繁查找本地文件的 Windows 用户。它通过索引文件名提供接近即时的搜索体验。

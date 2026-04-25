@@ -2,27 +2,6 @@
 import { getCollection, render } from 'astro:content';
 import ArticleLayout from '@/layouts/ArticleLayout.astro';
 
-const pricingLabels = {
-  free: '免费',
-  freemium: '免费增值',
-  paid: '付费',
-  'open-source': '开源'
-};
-
-const languageLabels = {
-  zh: '中文',
-  en: '英文',
-  multi: '多语言',
-  unknown: '未确认'
-};
-
-const statusLabels = {
-  active: '正常可用',
-  limited: '部分可用',
-  deprecated: '不再推荐',
-  unavailable: '暂不可用'
-};
-
 export async function getStaticPaths() {
   const resources = await getCollection('resources', ({ data }) => !data.draft);
   return resources.map((entry) => ({
@@ -36,50 +15,6 @@ const { Content } = await render(entry);
 ---
 
 <ArticleLayout {...entry.data}>
-  <section class="resource-summary-panel" aria-label="资源基础信息">
-    {
-      entry.data.summary && (
-        <div class="resource-reason">
-          <span>推荐理由</span>
-          <strong>{entry.data.summary}</strong>
-        </div>
-      )
-    }
-    <dl class="resource-meta-grid">
-      <div>
-        <dt>资源状态</dt>
-        <dd>{statusLabels[entry.data.status]}</dd>
-      </div>
-      <div>
-        <dt>价格</dt>
-        <dd>{entry.data.pricing ? pricingLabels[entry.data.pricing] : '未标注'}</dd>
-      </div>
-      <div>
-        <dt>平台</dt>
-        <dd>{entry.data.platforms.length > 0 ? entry.data.platforms.join(' / ') : '未标注'}</dd>
-      </div>
-      <div>
-        <dt>推荐指数</dt>
-        <dd>{entry.data.rating ? `${entry.data.rating}/5` : '未评分'}</dd>
-      </div>
-      <div>
-        <dt>语言</dt>
-        <dd>{languageLabels[entry.data.language]}</dd>
-      </div>
-      <div>
-        <dt>授权</dt>
-        <dd>{entry.data.license ?? '未标注'}</dd>
-      </div>
-      <div>
-        <dt>来源</dt>
-        <dd>{entry.data.official ? '官方入口' : '第三方整理'}</dd>
-      </div>
-      <div>
-        <dt>替代方案</dt>
-        <dd>{entry.data.alternatives.length > 0 ? entry.data.alternatives.join(' / ') : '暂无'}</dd>
-      </div>
-    </dl>
-  </section>
   {
     entry.data.url && (
       <p class="resource-action">

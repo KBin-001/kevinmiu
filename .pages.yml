@@ -5,221 +5,189 @@ media:
   rename: safe
 
 content:
-  - name: posts
-    label: 文章
-    type: collection
-    path: src/content/posts
-    filename: "{fields.slug}.md"
-    view:
-      primary: title
-      fields: [title, category, updatedAt, featured, draft]
-      sort: [updatedAt, publishedAt, title]
-      search: [title, description, tags]
-      default:
-        sort: updatedAt
-        order: desc
-    fields:
-      - name: title
-        label: 标题
-        type: string
-        required: true
-      - name: slug
-        label: URL Slug
-        type: string
-        required: true
-      - name: description
-        label: 摘要描述
-        type: text
-        required: true
-        options:
-          rows: 3
-      - name: category
-        label: 分类
-        type: select
-        required: true
-        options:
-          values:
-            - { value: benefits, label: 资源福利 }
-            - { value: software, label: 软件工具 }
-            - { value: dev-tools, label: 开发工具 }
-            - { value: ai-tools, label: AI 工具 }
-            - { value: websites, label: 网站导航 }
-            - { value: tutorials, label: 教程文章 }
-            - { value: news, label: 资讯动态 }
-      - name: tags
-        label: 标签
-        type: select
-        required: true
-        options:
-          multiple: true
-          creatable: true
-          values: [Windows, macOS, Android, iOS, Linux, 开源, 免费, 限免, 效率工具, 开发者, AI, 编程, 设计, 下载, 网盘, 浏览器插件, 命令行, GitHub, 部署, SEO]
-      - name: publishedAt
-        label: 发布时间
-        type: date
-        required: true
-      - name: updatedAt
-        label: 更新时间
-        type: date
-        required: true
-      - name: featured
-        label: 首页推荐
-        type: boolean
-      - name: draft
-        label: 草稿
-        type: boolean
-      - name: cover
-        label: 封面图
-        type: image
-      - name: body
-        label: 正文
-        type: rich-text
-        required: true
-        options:
-          format: markdown
-          media: true
-          path: articles
-          switcher: true
+  - name: content
+    label: 内容发布
+    type: group
+    items:
+      - name: posts
+        label: 教程文章
+        type: collection
+        path: src/content/posts
+        filename: "{fields.slug}.md"
+        view:
+          primary: title
+          fields: [title, category, updatedAt, featured, draft]
+          sort: [updatedAt, publishedAt, title]
+          search: [title, description, tags]
+          default:
+            sort: updatedAt
+            order: desc
+        fields:
+          - name: title
+            label: 标题
+            type: string
+            required: true
+            description: 前台卡片和文章页显示的主标题。
+          - name: slug
+            label: URL Slug
+            type: string
+            required: true
+            description: 用英文小写、数字和短横线，例如 cloudflare-pages。
+            pattern:
+              regex: "^[a-z0-9-]+$"
+              message: 只能使用英文小写、数字和短横线。
+          - name: description
+            label: 摘要
+            type: text
+            required: true
+            description: 用 1-2 句话说明这篇内容解决什么问题，会显示在卡片里。
+            options:
+              rows: 3
+          - name: category
+            label: 分类
+            type: select
+            required: true
+            options:
+              values:
+                - { value: tutorials, label: 教程文章 }
+                - { value: news, label: 资讯动态 }
+                - { value: dev-tools, label: 开发工具 }
+                - { value: ai-tools, label: AI 工具 }
+          - name: tags
+            label: 标签
+            type: select
+            required: true
+            description: 用来做标签页和卡片 chip，少而准即可。
+            options:
+              multiple: true
+              creatable: true
+              values: [Windows, macOS, Android, iOS, Linux, 开源, 免费, 限免, 效率工具, 开发者, AI, 编程, 设计, 下载, 网盘, 浏览器插件, 命令行, GitHub, 部署, SEO]
+          - name: cover
+            label: 正文首图
+            type: image
+            description: 不在首页卡片显示，只会在文章详情正文顶部显示。
+          - name: publishedAt
+            label: 发布时间
+            type: date
+            required: true
+          - name: updatedAt
+            label: 更新时间
+            type: date
+            required: true
+          - name: featured
+            label: 首页推荐
+            type: boolean
+            description: 打开后会进入首页“今日推荐”。
+          - name: draft
+            label: 草稿
+            type: boolean
+            description: 草稿不会在前台发布。
+          - name: body
+            label: 正文
+            type: rich-text
+            required: true
+            description: 直接写内容即可，需要配图时在正文编辑器里插入图片。
+            options:
+              format: markdown
+              media: true
+              path: articles
+              switcher: true
 
-  - name: resources
-    label: 资源
-    type: collection
-    path: src/content/resources
-    filename: "{fields.slug}.md"
-    view:
-      primary: title
-      fields: [title, category, pricing, rating, updatedAt, featured, draft]
-      sort: [updatedAt, rating, title]
-      search: [title, description, tags, summary]
-      default:
-        sort: updatedAt
-        order: desc
-    fields:
-      - name: title
-        label: 名称
-        type: string
-        required: true
-      - name: slug
-        label: URL Slug
-        type: string
-        required: true
-      - name: description
-        label: 摘要描述
-        type: text
-        required: true
-        options:
-          rows: 3
-      - name: category
-        label: 分类
-        type: select
-        required: true
-        options:
-          values:
-            - { value: benefits, label: 资源福利 }
-            - { value: software, label: 软件工具 }
-            - { value: dev-tools, label: 开发工具 }
-            - { value: ai-tools, label: AI 工具 }
-            - { value: websites, label: 网站导航 }
-            - { value: tutorials, label: 教程文章 }
-            - { value: news, label: 资讯动态 }
-      - name: tags
-        label: 标签
-        type: select
-        required: true
-        options:
-          multiple: true
-          creatable: true
-          values: [Windows, macOS, Android, iOS, Linux, 开源, 免费, 限免, 效率工具, 开发者, AI, 编程, 设计, 下载, 网盘, 浏览器插件, 命令行, GitHub, 部署, SEO]
-      - name: publishedAt
-        label: 发布时间
-        type: date
-        required: true
-      - name: updatedAt
-        label: 更新时间
-        type: date
-        required: true
-      - name: featured
-        label: 首页推荐
-        type: boolean
-      - name: draft
-        label: 草稿
-        type: boolean
-      - name: cover
-        label: 封面图
-        type: image
-      - name: url
-        label: 官网/访问地址
-        type: string
-      - name: summary
-        label: 推荐理由
-        type: text
-        options:
-          rows: 2
-      - name: pricing
-        label: 价格类型
-        type: select
-        options:
-          values:
-            - { value: free, label: 免费 }
-            - { value: freemium, label: 免费增值 }
-            - { value: paid, label: 付费 }
-            - { value: open-source, label: 开源 }
-      - name: platforms
-        label: 平台
-        type: select
-        options:
-          multiple: true
-          creatable: true
-          values: [Web, Windows, macOS, Linux, Android, iOS, Chrome, Edge, Firefox]
-      - name: rating
-        label: 推荐指数
-        type: number
-        options:
-          min: 1
-          max: 5
-          step: 1
-      - name: official
-        label: 官方入口
-        type: boolean
-      - name: language
-        label: 语言
-        type: select
-        options:
-          values:
-            - { value: zh, label: 中文 }
-            - { value: en, label: 英文 }
-            - { value: multi, label: 多语言 }
-            - { value: unknown, label: 未确认 }
-      - name: license
-        label: 授权/许可证
-        type: string
-      - name: alternatives
-        label: 替代方案
-        type: select
-        options:
-          multiple: true
-          creatable: true
-          values: []
-      - name: status
-        label: 资源状态
-        type: select
-        options:
-          values:
-            - { value: active, label: 正常可用 }
-            - { value: limited, label: 部分可用 }
-            - { value: deprecated, label: 不再推荐 }
-            - { value: unavailable, label: 暂不可用 }
-      - name: body
-        label: 正文
-        type: rich-text
-        required: true
-        options:
-          format: markdown
-          media: true
-          path: resources
-          switcher: true
+      - name: resources
+        label: 资源工具
+        type: collection
+        path: src/content/resources
+        filename: "{fields.slug}.md"
+        view:
+          primary: title
+          fields: [title, category, updatedAt, featured, draft]
+          sort: [updatedAt, publishedAt, title]
+          search: [title, description, tags, url]
+          default:
+            sort: updatedAt
+            order: desc
+        fields:
+          - name: title
+            label: 名称
+            type: string
+            required: true
+            description: 工具、网站或资源的名称。
+          - name: slug
+            label: URL Slug
+            type: string
+            required: true
+            description: 用英文小写、数字和短横线，例如 everything 或 cloudflare-pages。
+            pattern:
+              regex: "^[a-z0-9-]+$"
+              message: 只能使用英文小写、数字和短横线。
+          - name: url
+            label: 访问网址
+            type: string
+            required: true
+            description: 工具官网、网站地址、活动入口或资源链接。
+            pattern:
+              regex: "^https?://.+"
+              message: 请输入 http:// 或 https:// 开头的网址。
+          - name: description
+            label: 推荐语
+            type: text
+            required: true
+            description: 你不用写复杂评测，写清楚“它是什么、适合谁、为什么值得收藏”即可。
+            options:
+              rows: 3
+          - name: category
+            label: 分类
+            type: select
+            required: true
+            options:
+              values:
+                - { value: benefits, label: 资源福利 }
+                - { value: software, label: 软件工具 }
+                - { value: dev-tools, label: 开发工具 }
+                - { value: ai-tools, label: AI 工具 }
+                - { value: websites, label: 网站导航 }
+          - name: tags
+            label: 标签
+            type: select
+            required: true
+            description: 用来做标签页和卡片 chip，选 2-5 个就够。
+            options:
+              multiple: true
+              creatable: true
+              values: [Windows, macOS, Android, iOS, Linux, Web, 开源, 免费, 限免, 效率工具, 开发者, AI, 编程, 设计, 下载, 网盘, 浏览器插件, 命令行, GitHub, 部署, SEO]
+          - name: cover
+            label: 正文首图
+            type: image
+            description: 不在首页卡片显示，只会在详情正文顶部显示；没有图也可以不填。
+          - name: publishedAt
+            label: 发布时间
+            type: date
+            required: true
+          - name: updatedAt
+            label: 更新时间
+            type: date
+            required: true
+          - name: featured
+            label: 首页推荐
+            type: boolean
+            description: 打开后会进入首页“今日推荐”。
+          - name: draft
+            label: 草稿
+            type: boolean
+            description: 草稿不会在前台发布。
+          - name: body
+            label: 补充说明
+            type: rich-text
+            description: 可选。需要写教程、使用提示、截图说明时再填。
+            options:
+              format: markdown
+              media: true
+              path: resources
+              switcher: true
 
 settings:
+  content:
+    merge: true
   commit:
     templates:
       create: "content: create {path}"

@@ -10,6 +10,7 @@ type Props = {
   tags: string[];
   publishedAt: Date;
   updatedAt: Date;
+  cover?: string;
 };
 ---
 
@@ -32,6 +33,13 @@ type Props = {
       </div>
     </header>
     <div class="prose">
+      {
+        Astro.props.cover && (
+          <figure class="prose-cover">
+            <img src={Astro.props.cover} alt="" loading="eager" decoding="async" />
+          </figure>
+        )
+      }
       <slot />
     </div>
   </article>
