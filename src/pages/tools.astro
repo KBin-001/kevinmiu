@@ -1,0 +1,27 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import ArticleCard from '@/components/ArticleCard.astro';
+import { getAllContentItems } from '@/lib/content';
+
+const toolCategories = ['software', 'dev-tools', 'ai-tools'];
+const items = (await getAllContentItems()).filter((item) => toolCategories.includes(item.category));
+---
+
+<BaseLayout title="工具" description="软件工具、开发工具和 AI 工具合集。">
+  <section class="container page-head">
+    <p class="eyebrow">分类</p>
+    <h1>工具</h1>
+    <p>软件工具、开发工具和 AI 工具都会汇总在这里。</p>
+  </section>
+  <section class="container section-block">
+    {
+      items.length > 0 ? (
+        <div class="card-grid">
+          {items.map((item) => <ArticleCard item={item} />)}
+        </div>
+      ) : (
+        <p class="empty-state">工具分类还没有发布内容。</p>
+      )
+    }
+  </section>
+</BaseLayout>

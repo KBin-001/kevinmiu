@@ -48,7 +48,7 @@ const tags = getAllTags(items).slice(0, 5);
       </div>
       <div class="filter-tabs" aria-label="内容筛选" data-filter-tabs>
         <button type="button" class="is-active" data-filter="all">全部</button>
-        <button type="button" data-filter="dev-tools">工具</button>
+        <button type="button" data-filter="tools">工具</button>
         <button type="button" data-filter="post">文章</button>
         <button type="button" data-filter="websites">导航</button>
       </div>
@@ -97,13 +97,18 @@ const tags = getAllTags(items).slice(0, 5);
     const reset = document.querySelector('[data-filter-reset]');
     const tabs = Array.from(tabRoot?.querySelectorAll('[data-filter]') ?? []);
     const cards = Array.from(grid?.querySelectorAll('[data-category]') ?? []);
+    const toolCategories = ['software', 'dev-tools', 'ai-tools'];
 
     function applyFilter(filter) {
       let visibleCount = 0;
       cards.forEach((card) => {
         const category = card.getAttribute('data-category');
         const kind = card.getAttribute('data-kind');
-        const visible = filter === 'all' || category === filter || kind === filter;
+        const visible =
+          filter === 'all' ||
+          category === filter ||
+          kind === filter ||
+          (filter === 'tools' && toolCategories.includes(category ?? ''));
         card.toggleAttribute('hidden', !visible);
         if (visible) visibleCount += 1;
       });

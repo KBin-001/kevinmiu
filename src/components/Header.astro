@@ -1,17 +1,29 @@
 ---
 const pathname = Astro.url.pathname;
+const toolMatches = ['/tools/', '/category/software/', '/category/dev-tools/', '/category/ai-tools/'];
 
-const navItems = [
+type NavItem = {
+  href: string;
+  label: string;
+  match?: string;
+  matches?: string[];
+  external?: boolean;
+};
+
+const navItems: NavItem[] = [
   {
     href: 'https://my.86hk.vip/#/pages/micro_store/index?agent_id=f00b5021698254bcb967e505d8255dd7',
     label: '流量卡',
     external: true
   },
   { href: '/category/benefits/', label: '资源', match: '/category/benefits/' },
-  { href: '/category/dev-tools/', label: '工具', match: '/category/dev-tools/' },
+  { href: '/tools/', label: '工具', matches: toolMatches },
   { href: '/category/tutorials/', label: '文章', match: '/category/tutorials/' },
   { href: '/category/websites/', label: '导航', match: '/category/websites/' }
 ];
+
+const isActive = (item: NavItem) =>
+  item.match ? pathname.startsWith(item.match) : item.matches?.some((match: string) => pathname.startsWith(match));
 ---
 
 <header class="site-header">
@@ -25,11 +37,11 @@ const navItems = [
       {
         navItems.map((item) => (
           <a
-            class:list={{ active: item.match ? pathname.startsWith(item.match) : false }}
+            class:list={{ active: isActive(item) }}
             href={item.href}
             target={item.external ? '_blank' : undefined}
             rel={item.external ? 'noreferrer' : undefined}
-            aria-current={item.match && pathname.startsWith(item.match) ? 'page' : undefined}
+            aria-current={isActive(item) ? 'page' : undefined}
           >
             {item.label}
           </a>
