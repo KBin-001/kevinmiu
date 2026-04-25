@@ -2,9 +2,8 @@
 title: VSCODE 多行显示
 slug: vscode-wrap-tabs
 description: VSCODE 多行显示的操作
-category: dev-tools
+category: tutorials
 tags:
-  - 效率工具
   - 编程
   - 开发者
 publishedAt: 2026-04-23
