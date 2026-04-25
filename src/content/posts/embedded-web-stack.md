@@ -1,11 +1,10 @@
 ---
 title: 指令速查手册
-slug: 指令速查手册
+slug: zhilin
 description: 指令速查手册
-category: dev-tools
+category: tutorials
 tags:
   - Android
-  - 效率工具
   - 开发者
   - 编程
   - 命令行
