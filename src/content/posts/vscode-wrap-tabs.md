@@ -8,9 +8,10 @@ tags:
   - 开发者
 publishedAt: 2026-04-23
 updatedAt: 2026-04-23
-featured: true
+featured: false
 draft: false
 cover: /images/285c3357-1f41-42cd-bce5-8aaf2192375b-1.png
+accessProtected: false
 ---
 **按住 ctrl + shift + p**
 
