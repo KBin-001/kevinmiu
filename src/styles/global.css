@@ -1011,6 +1011,101 @@ svg {
   color: var(--brand-strong);
 }
 
+.resource-action-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin: 0 0 32px;
+  border: 1px solid color-mix(in srgb, var(--border-strong) 72%, transparent);
+  border-radius: var(--radius-md);
+  background:
+    radial-gradient(circle at 14% 0%, color-mix(in srgb, var(--brand) 12%, transparent), transparent 24rem),
+    color-mix(in srgb, var(--surface-raised) 82%, transparent);
+  padding: 22px;
+  box-shadow:
+    0 18px 44px rgba(15, 23, 42, 0.06),
+    0 1px 0 color-mix(in srgb, #ffffff 72%, transparent) inset;
+  backdrop-filter: blur(18px) saturate(140%);
+}
+
+.resource-action-copy {
+  min-width: 0;
+}
+
+.resource-action-copy span {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--brand-strong);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+}
+
+.resource-action-copy h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: 20px;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+.resource-action-copy p {
+  margin: 8px 0 0;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.prose .resource-action-button {
+  flex: 0 0 auto;
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, var(--brand) 72%, #ffffff 28%);
+  border-bottom: 1px solid color-mix(in srgb, var(--brand) 72%, #ffffff 28%);
+  border-radius: var(--radius-xs);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--brand) 94%, #ffffff 6%), var(--brand-strong)),
+    var(--brand);
+  padding: 0 18px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 1;
+  box-shadow:
+    0 12px 28px color-mix(in srgb, var(--brand) 18%, transparent),
+    0 1px 0 color-mix(in srgb, #ffffff 36%, transparent) inset;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.prose .resource-action-button::after {
+  margin-left: 8px;
+  color: color-mix(in srgb, #ffffff 90%, transparent);
+  content: "\2197";
+  font-size: 13px;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+.prose .resource-action-button:hover {
+  border-color: color-mix(in srgb, var(--brand) 84%, #ffffff 16%);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow:
+    0 16px 34px color-mix(in srgb, var(--brand) 24%, transparent),
+    0 1px 0 color-mix(in srgb, #ffffff 38%, transparent) inset;
+}
+
+.prose .resource-action-button:hover::after {
+  transform: translate(1px, -1px);
+}
+
 .prose code {
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -1214,6 +1309,17 @@ svg {
 
   .content-card.is-featured {
     min-height: 280px;
+  }
+
+  .resource-action-card {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 18px;
+    padding: 18px;
+  }
+
+  .prose .resource-action-button {
+    width: 100%;
   }
 
   .footer-inner {

@@ -178,6 +178,7 @@ content:
           - name: body
             label: 补充说明
             type: rich-text
+            required: false
             description: 可选。需要写教程、使用提示、截图说明时再填。
             options:
               format: markdown

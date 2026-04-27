@@ -13,14 +13,39 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { Content } = await render(entry);
+const resourceUrl = entry.data.url;
+let resourceHost = '';
+
+try {
+  resourceHost = resourceUrl ? new URL(resourceUrl).hostname.replace(/^www\./, '') : '';
+} catch {
+  resourceHost = '';
+}
+
+const releaseMatch = resourceUrl?.match(/\/releases\/tag\/([^/?#]+)/i);
+const releaseVersion = releaseMatch ? `v${releaseMatch[1].replace(/^v/i, '')}` : '';
+const isGithubRelease = resourceHost === 'github.com' && Boolean(releaseMatch);
+const actionEyebrow = isGithubRelease ? '官方发布页' : '资源入口';
+const actionTitle = releaseVersion ? `${entry.data.title} ${releaseVersion}` : entry.data.title;
+const actionDescription = isGithubRelease
+  ? '前往 GitHub Releases 查看版本说明与下载资源'
+  : `前往 ${resourceHost || '官方页面'} 查看详情与获取资源`;
+const actionButtonText = isGithubRelease ? '打开下载页' : '打开链接';
 ---
 
 <ArticleLayout {...entry.data}>
   {
-    entry.data.url && (
-      <p class="resource-action">
-        <a class="primary-link" href={entry.data.url} target="_blank" rel="noreferrer">访问官网</a>
-      </p>
+    resourceUrl && (
+      <section class="resource-action-card" aria-label="资源入口">
+        <div class="resource-action-copy">
+          <span>{actionEyebrow}</span>
+          <h2>{actionTitle}</h2>
+          <p>{actionDescription}</p>
+        </div>
+        <a class="resource-action-button" href={resourceUrl} target="_blank" rel="noreferrer">
+          {actionButtonText}
+        </a>
+      </section>
     )
   }
   <Content />
