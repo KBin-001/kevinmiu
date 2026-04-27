@@ -12,7 +12,9 @@ const commonSchema = z.object({
   updatedAt: z.coerce.date(),
   featured: z.boolean().default(false),
   draft: z.boolean().default(false),
-  cover: z.string().optional()
+  cover: z.string().optional(),
+  accessProtected: z.boolean().default(false),
+  accessPassword: z.string().optional()
 });
 
 const posts = defineCollection({

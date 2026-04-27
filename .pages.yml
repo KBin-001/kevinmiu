@@ -82,6 +82,14 @@ content:
             label: 草稿
             type: boolean
             description: 草稿不会在前台发布。
+          - name: accessProtected
+            label: 需要密码访问
+            type: boolean
+            description: 打开后，前台详情页会先显示密码访问卡片。
+          - name: accessPassword
+            label: 访问密码
+            type: string
+            description: 仅在开启“需要密码访问”时填写。建议使用不容易猜到的独立密码。
           - name: body
             label: 正文
             type: rich-text
@@ -175,6 +183,14 @@ content:
             label: 草稿
             type: boolean
             description: 草稿不会在前台发布。
+          - name: accessProtected
+            label: 需要密码访问
+            type: boolean
+            description: 打开后，前台详情页会先显示密码访问卡片。
+          - name: accessPassword
+            label: 访问密码
+            type: string
+            description: 仅在开启“需要密码访问”时填写。建议使用不容易猜到的独立密码。
           - name: body
             label: 补充说明
             type: rich-text

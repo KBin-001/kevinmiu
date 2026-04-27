@@ -2,6 +2,7 @@
 import BaseLayout from './BaseLayout.astro';
 import { formatDate } from '@/lib/content';
 import { getCategoryName } from '@/lib/taxonomy';
+import { createHash } from 'node:crypto';
 
 type Props = {
   title: string;
@@ -11,11 +12,19 @@ type Props = {
   publishedAt: Date;
   updatedAt: Date;
   cover?: string;
+  accessProtected?: boolean;
+  accessPassword?: string;
 };
+
+const isAccessProtected = Boolean(Astro.props.accessProtected && Astro.props.accessPassword);
+const accessPasswordHash = isAccessProtected
+  ? createHash('sha256').update(Astro.props.accessPassword ?? '').digest('hex')
+  : '';
+const accessStorageKey = `kevinmiu:access:${Astro.url.pathname}`;
 ---
 
-<BaseLayout title={Astro.props.title} description={Astro.props.description}>
-  <article class="container article-shell" data-pagefind-body>
+<BaseLayout title={Astro.props.title} description={Astro.props.description} noindex={isAccessProtected}>
+  <article class="container article-shell" data-pagefind-body={isAccessProtected ? undefined : true}>
     <nav class="breadcrumb" aria-label="面包屑导航">
       <a href="/">首页</a>
       <span>/</span>
@@ -32,7 +41,39 @@ type Props = {
         {Astro.props.tags.map((tag) => <a href={`/tag/${encodeURIComponent(tag)}/`}>#{tag}</a>)}
       </div>
     </header>
-    <div class="prose">
+    {
+      isAccessProtected && (
+        <section
+          class="access-gate"
+          data-access-gate
+          data-password-hash={accessPasswordHash}
+          data-storage-key={accessStorageKey}
+        >
+          <div class="access-gate-copy">
+            <span>Protected Note</span>
+            <h2>这篇内容需要密码访问</h2>
+            <p>输入作者提供的访问密码后，即可查看完整正文。</p>
+          </div>
+          <form class="access-gate-form" data-access-form>
+            <input
+              data-access-input
+              type="password"
+              autocomplete="current-password"
+              placeholder="输入访问密码"
+              aria-label="访问密码"
+            />
+            <button type="submit">解锁内容</button>
+          </form>
+          <p class="access-gate-message" data-access-message aria-live="polite"></p>
+        </section>
+      )
+    }
+    <div
+      class="prose"
+      data-access-content={isAccessProtected ? 'locked' : undefined}
+      data-pagefind-ignore={isAccessProtected ? 'all' : undefined}
+      hidden={isAccessProtected}
+    >
       {
         Astro.props.cover && (
           <figure class="prose-cover">
@@ -43,4 +84,60 @@ type Props = {
       <slot />
     </div>
   </article>
+  {
+    isAccessProtected && (
+      <script is:inline>
+        (() => {
+          const gate = document.querySelector('[data-access-gate]');
+          const content = document.querySelector('[data-access-content="locked"]');
+
+          if (!gate || !content) return;
+
+          const form = gate.querySelector('[data-access-form]');
+          const input = gate.querySelector('[data-access-input]');
+          const message = gate.querySelector('[data-access-message]');
+          const expectedHash = gate.getAttribute('data-password-hash');
+          const storageKey = gate.getAttribute('data-storage-key');
+
+          const toHex = (buffer) =>
+            Array.from(new Uint8Array(buffer))
+              .map((byte) => byte.toString(16).padStart(2, '0'))
+              .join('');
+
+          const hashPassword = async (value) => {
+            const encoded = new TextEncoder().encode(value);
+            const digest = await crypto.subtle.digest('SHA-256', encoded);
+            return toHex(digest);
+          };
+
+          const unlock = () => {
+            gate.hidden = true;
+            content.hidden = false;
+            content.setAttribute('data-access-content', 'unlocked');
+          };
+
+          if (storageKey && localStorage.getItem(storageKey) === expectedHash) {
+            unlock();
+            return;
+          }
+
+          form?.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const value = input?.value ?? '';
+            const currentHash = await hashPassword(value);
+
+            if (currentHash === expectedHash) {
+              if (storageKey) localStorage.setItem(storageKey, currentHash);
+              unlock();
+              return;
+            }
+
+            if (message) message.textContent = '密码不正确，请再试一次。';
+            input?.focus();
+            input?.select();
+          });
+        })();
+      </script>
+    )
+  }
 </BaseLayout>

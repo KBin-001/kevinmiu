@@ -5,6 +5,7 @@ import Header from '@/components/Header.astro';
 type Props = {
   title?: string;
   description?: string;
+  noindex?: boolean;
 };
 
 const siteName = 'kevinmiu';
@@ -29,6 +30,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://example.com
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    {Astro.props.noindex && <meta name="robots" content="noindex, nofollow" />}
     <link rel="canonical" href={canonical} />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />

@@ -991,6 +991,102 @@ svg {
   line-height: 1.75;
 }
 
+.access-gate {
+  display: grid;
+  gap: 18px;
+  margin: 30px 0 64px;
+  border: 1px solid color-mix(in srgb, var(--border-strong) 76%, transparent);
+  border-radius: var(--radius-md);
+  background:
+    radial-gradient(circle at 16% 0%, color-mix(in srgb, var(--brand) 12%, transparent), transparent 24rem),
+    color-mix(in srgb, var(--surface-raised) 86%, transparent);
+  padding: 26px;
+  box-shadow:
+    0 20px 52px rgba(15, 23, 42, 0.07),
+    0 1px 0 color-mix(in srgb, #ffffff 70%, transparent) inset;
+  backdrop-filter: blur(18px) saturate(140%);
+}
+
+.access-gate-copy span {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--brand-strong);
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.access-gate-copy h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: 24px;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+.access-gate-copy p {
+  margin: 8px 0 0;
+  max-width: 520px;
+  color: var(--text-muted);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.access-gate-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  max-width: 560px;
+}
+
+.access-gate-form input {
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  padding: 0 14px;
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  outline: 0;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.access-gate-form input:focus {
+  border-color: color-mix(in srgb, var(--brand) 60%, var(--border-strong));
+  box-shadow: 0 0 0 4px var(--brand-ring);
+}
+
+.access-gate-form button {
+  min-height: 44px;
+  border: 1px solid color-mix(in srgb, var(--brand) 80%, #ffffff 20%);
+  border-radius: var(--radius-xs);
+  background: var(--brand);
+  padding: 0 18px;
+  color: #ffffff;
+  font-weight: 650;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.access-gate-form button:hover {
+  background: var(--brand-strong);
+  transform: translateY(-1px);
+}
+
+.access-gate-message {
+  min-height: 20px;
+  margin: 0;
+  color: var(--rose);
+  font-size: 13px;
+}
+
 .prose {
   padding: 26px 0 64px;
   color: var(--text-secondary);
@@ -1320,6 +1416,20 @@ svg {
 
   .prose .resource-action-button {
     width: 100%;
+  }
+
+  .access-gate {
+    padding: 20px;
+  }
+
+  .access-gate-form {
+    grid-template-columns: 1fr;
+  }
+
+  .access-gate-form input,
+  .access-gate-form button {
+    width: 100%;
+    min-height: 44px;
   }
 
   .footer-inner {
