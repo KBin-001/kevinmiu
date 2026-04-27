@@ -13,7 +13,7 @@ updatedAt: 2026-04-23
 featured: true
 draft: false
 accessProtected: true
-accessPassword: KevinMiu@2026
+accessPassword: kb
 cover: /images/chatgpt-image-2026423-175652.png
 ---
 # 📋 指令速查手册
