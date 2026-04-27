@@ -7,8 +7,9 @@ tags:
   - Android
 publishedAt: 2026-04-24
 updatedAt: 2026-04-24
-featured: true
+featured: false
 draft: false
+accessProtected: false
 ---
 # 在device下添加vibr服务
 
