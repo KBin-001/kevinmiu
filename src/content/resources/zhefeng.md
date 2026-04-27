@@ -3,7 +3,7 @@ title: 哲风壁纸
 slug: zhefeng
 url: https://haowallpaper.com/wallpaperForum
 description: 哲风壁纸
-category: dev-tools
+category: websites
 tags:
   - 效率工具
   - 设计
