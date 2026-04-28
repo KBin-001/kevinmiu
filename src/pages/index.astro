@@ -2,9 +2,12 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import SearchBox from '@/components/SearchBox.astro';
 import ArticleCard from '@/components/ArticleCard.astro';
-import { getAllContentItems, getAllTags } from '@/lib/content';
+import { formatDate, getAllContentItems, getAllTags } from '@/lib/content';
 
 const items = await getAllContentItems();
+const resourceCount = items.filter((item) => item.kind === 'resource').length;
+const postCount = items.filter((item) => item.kind === 'post').length;
+const latestUpdatedAt = items[0]?.updatedAt;
 const featuredItems = items.filter((item) => item.featured).slice(0, 3);
 const featured = featuredItems.length > 0 ? featuredItems : items.slice(0, 3);
 const featuredUrls = new Set(featured.map((item) => item.url));
@@ -23,6 +26,23 @@ const tags = getAllTags(items).slice(0, 5);
       <div class="hot-searches" aria-label="热门搜索">
         <span>热门：</span>
         {tags.map((tag) => <a href={`/tag/${encodeURIComponent(tag)}/`}>#{tag}</a>)}
+      </div>
+      <div class="hero-stats" aria-label="站点统计">
+        <span>
+          <strong>{resourceCount}</strong>
+          个资源
+        </span>
+        <span>
+          <strong>{postCount}</strong>
+          篇文章
+        </span>
+        {
+          latestUpdatedAt && (
+            <span>
+              最近更新 <strong>{formatDate(latestUpdatedAt)}</strong>
+            </span>
+          )
+        }
       </div>
     </div>
   </section>
