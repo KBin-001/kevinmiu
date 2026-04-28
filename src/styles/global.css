@@ -965,28 +965,91 @@ svg {
 
 .site-footer {
   border-top: 1px solid var(--border);
-  background: color-mix(in srgb, var(--surface-raised) 78%, transparent);
+  background:
+    radial-gradient(circle at 12% 0%, color-mix(in srgb, var(--brand) 8%, transparent), transparent 26rem),
+    color-mix(in srgb, var(--surface-raised) 82%, transparent);
   color: var(--text-muted);
   backdrop-filter: blur(18px);
 }
 
 .footer-inner {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: center;
-  gap: 18px;
-  padding: 30px 0;
+  gap: 40px;
+  padding: 42px 0 28px;
   font-size: 14px;
 }
 
-.footer-inner a:hover {
+.footer-brand {
+  max-width: 430px;
+}
+
+.footer-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text);
+  font-size: 18px;
+  font-weight: 760;
+  letter-spacing: -0.02em;
+}
+
+.footer-logo img {
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  box-shadow: var(--shadow-sm);
+}
+
+.footer-brand p {
+  margin: 14px 0 0;
+  color: var(--text-muted);
+  line-height: 1.75;
+}
+
+.footer-links {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(130px, auto));
+  gap: 44px;
+}
+
+.footer-links div {
+  display: grid;
+  gap: 9px;
+}
+
+.footer-links span {
+  margin-bottom: 3px;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 760;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.footer-links a,
+.footer-bottom a {
+  color: var(--text-muted);
+  transition: color 0.2s ease;
+}
+
+.footer-links a:hover,
+.footer-bottom a:hover {
   color: var(--brand-strong);
 }
 
-.footer-inner > * + *::before {
-  margin-right: 18px;
+.footer-bottom {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-top: 1px solid var(--border);
+  padding-top: 22px;
   color: var(--text-subtle);
-  content: "/";
+  font-size: 13px;
 }
 
 .page-head,
@@ -1699,6 +1762,22 @@ svg {
   }
 
   .row-heading {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .footer-inner {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding: 34px 0 24px;
+  }
+
+  .footer-links {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .footer-bottom {
     align-items: start;
     flex-direction: column;
   }

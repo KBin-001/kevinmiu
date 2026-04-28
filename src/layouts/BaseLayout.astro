@@ -45,9 +45,31 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://example.com
     </main>
     <footer class="site-footer">
       <div class="container footer-inner">
-        <a href="/about/">关于本站</a>
-        <a href="/#latest">更新统计</a>
-        <a href="/rss.xml">RSS</a>
+        <div class="footer-brand">
+          <a class="footer-logo" href="/" aria-label="kevinmiu 首页">
+            <img src="/images/kevinmiu-logo.png" alt="" width="34" height="34" loading="lazy" decoding="async" />
+            <span>kevinmiu</span>
+          </a>
+          <p>开发者值得收藏的工具、教程、资源与网站导航。</p>
+        </div>
+        <div class="footer-links" aria-label="页脚导航">
+          <div>
+            <span>Site</span>
+            <a href="/about/">关于本站</a>
+            <a href="/#latest">更新统计</a>
+            <a href="/rss.xml">RSS 订阅</a>
+          </div>
+          <div>
+            <span>Contact</span>
+            <a href="mailto:ypeng9490@gmail.com">ypeng9490@gmail.com</a>
+            <a href="/search/">站内搜索</a>
+            <a href="/admin/" rel="nofollow">内容后台</a>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <span>© 2026 kevinmiu. Curated for builders.</span>
+          <a href="mailto:ypeng9490@gmail.com">联系我</a>
+        </div>
       </div>
     </footer>
   </body>
