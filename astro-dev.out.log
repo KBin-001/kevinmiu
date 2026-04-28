@@ -1,0 +1,25 @@
+
+> kevinmiu@0.1.0 dev
+> astro dev --host 127.0.0.1
+
+[vite] connected.
+[2m09:34:18[22m [34m[types][39m Generated [2m6ms[22m
+[vite] connected.
+[2m09:34:19[22m [34m[content][39m Syncing content
+[2m09:34:19[22m [34m[content][39m Astro config changed
+[2m09:34:19[22m [34m[content][39m Clearing content store
+[2m09:34:19[22m [34m[content][39m Synced content
+[2m09:34:19[22m [34m[vite][39m Re-optimizing dependencies because vite config has changed
+[42m[1m astro [22m[49m [32mv6.1.9[39m [2mready in[22m 3994 [2mms[22m
+[2m┃[22m Local    [36mhttp://127.0.0.1:4321/[39m
+[2m09:34:19[22m [32mwatching for file changes...[39m
+[2m09:34:45[22m [34m[200][39m / [2m531ms[22m
+[2m09:34:50[22m [34m[vite][39m [32m✨ new dependencies optimized: [33mastro/runtime/client/dev-toolbar/entrypoint.js[32m[39m
+[2m09:34:50[22m [34m[vite][39m [32m✨ optimized dependencies changed. reloading[39m
+[2m09:34:50[22m [34m[200][39m / [2m8ms[22m
+[2m09:35:12[22m [34m[200][39m / [2m7ms[22m
+[2m09:35:23[22m [34m[200][39m / [2m7ms[22m
+[2m09:36:42[22m [34m[200][39m / [2m42ms[22m
+[2m09:37:01[22m [34m[watch][39m /src/styles/global.css
+[2m09:37:13[22m [34m[watch][39m /src/styles/global.css
+[2m09:37:42[22m [34m[200][39m / [2m33ms[22m

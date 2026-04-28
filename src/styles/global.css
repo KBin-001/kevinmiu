@@ -279,6 +279,41 @@ svg {
   justify-content: end;
 }
 
+.header-search {
+  display: inline-flex;
+  width: 38px;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--surface) 86%, transparent);
+  padding: 0;
+  color: var(--text-subtle);
+  box-shadow: 0 1px 0 color-mix(in srgb, #ffffff 72%, transparent) inset;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.header-search:hover,
+.header-search:focus-visible {
+  border-color: color-mix(in srgb, var(--brand) 52%, var(--border-strong));
+  background: var(--surface);
+  color: var(--brand-strong);
+  box-shadow:
+    0 0 0 4px var(--brand-ring),
+    0 1px 0 color-mix(in srgb, #ffffff 72%, transparent) inset;
+  outline: 0;
+}
+
+.header-search svg {
+  width: 16px;
+  height: 16px;
+  color: currentColor;
+}
+
 .header-link svg {
   font-size: 15px;
 }
