@@ -72,5 +72,84 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://example.com
         </div>
       </div>
     </footer>
+    <script is:inline>
+      (() => {
+        const params = new URLSearchParams(window.location.search);
+        const highlightQuery = params.get('highlight');
+        if (!highlightQuery?.trim()) return;
+
+        const getTerms = (query) =>
+          [...new Set(query.trim().split(/\s+/).filter((term) => term.length >= 2 || /[\u4e00-\u9fff]/.test(term)))].slice(
+            0,
+            6
+          );
+
+        const terms = getTerms(highlightQuery);
+        if (!terms.length) return;
+
+        const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const pattern = new RegExp(`(${terms.map(escapeRegExp).join('|')})`, 'gi');
+        const roots = Array.from(
+          document.querySelectorAll('.article-header h1, .article-header > p, .prose')
+        ).filter((element) => !element.hasAttribute('hidden'));
+
+        if (!roots.length) return;
+
+        const shouldSkipNode = (node) => {
+          const parent = node.parentElement;
+          return (
+            !parent ||
+            parent.closest(
+              'script, style, noscript, svg, mark, input, textarea, select, button, nav, .tag-list, .attachment-item, .resource-action-button, .access-gate'
+            )
+          );
+        };
+
+        const highlighted = [];
+
+        for (const root of roots) {
+          const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+            acceptNode(node) {
+              if (shouldSkipNode(node)) return NodeFilter.FILTER_REJECT;
+              if (!node.nodeValue || !pattern.test(node.nodeValue)) return NodeFilter.FILTER_REJECT;
+              pattern.lastIndex = 0;
+              return NodeFilter.FILTER_ACCEPT;
+            }
+          });
+
+          const textNodes = [];
+          while (walker.nextNode()) textNodes.push(walker.currentNode);
+
+          for (const node of textNodes) {
+            const fragment = document.createDocumentFragment();
+            const parts = node.nodeValue.split(pattern);
+
+            for (const part of parts) {
+              if (!part) continue;
+              pattern.lastIndex = 0;
+              if (pattern.test(part)) {
+                const mark = document.createElement('mark');
+                mark.className = 'search-jump-highlight';
+                mark.textContent = part;
+                fragment.append(mark);
+                highlighted.push(mark);
+              } else {
+                fragment.append(document.createTextNode(part));
+              }
+            }
+
+            node.parentNode?.replaceChild(fragment, node);
+          }
+        }
+
+        const firstHighlight = highlighted[0];
+        if (!firstHighlight) return;
+
+        window.setTimeout(() => {
+          firstHighlight.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          firstHighlight.classList.add('is-current');
+        }, 120);
+      })();
+    </script>
   </body>
 </html>

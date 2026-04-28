@@ -50,11 +50,11 @@ const isActive = (item: NavItem) =>
     </nav>
 
     <nav class="header-actions" aria-label="快捷入口">
-      <a class="header-search" href="/search/" aria-label="站内搜索">
+      <button class="header-search" type="button" aria-label="打开站内搜索" data-search-open>
         <svg aria-hidden="true" viewBox="0 0 24 24">
           <path d="m21 21-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" />
         </svg>
-      </a>
+      </button>
       <button class="theme-toggle" type="button" aria-label="切换主题" data-theme-toggle>
         <svg class="theme-icon theme-icon-sun" aria-hidden="true" viewBox="0 0 24 24">
           <path d="M12 4V2m0 20v-2m8-8h2M2 12h2m13.66-5.66 1.41-1.41M4.93 19.07l1.41-1.41m0-11.32L4.93 4.93m14.14 14.14-1.41-1.41M12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z" />
@@ -68,7 +68,40 @@ const isActive = (item: NavItem) =>
   </div>
 </header>
 
+<div class="search-dialog" data-search-dialog hidden>
+  <div class="search-dialog-backdrop" data-search-close></div>
+  <section class="search-dialog-panel" role="dialog" aria-modal="true" aria-label="快速搜索">
+    <div class="quick-search-head">
+      <svg aria-hidden="true" viewBox="0 0 24 24">
+        <path d="m21 21-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" />
+      </svg>
+      <input type="search" placeholder="搜索资源、文章、工具、网站…" data-quick-search-input />
+      <button type="button" data-search-close>Esc</button>
+    </div>
+    <div class="quick-search-filters" aria-label="搜索分类">
+      <button type="button" class="is-active" data-quick-filter="all">全部</button>
+      <button type="button" data-quick-filter="resource">资源</button>
+      <button type="button" data-quick-filter="post">文章</button>
+      <button type="button" data-quick-filter="tools">工具</button>
+      <button type="button" data-quick-filter="websites">网站</button>
+    </div>
+    <div class="quick-search-results" data-quick-search-results></div>
+    <div class="quick-search-empty" data-quick-search-empty hidden>
+      <strong>没有找到相关内容</strong>
+      <p>试试这些关键词</p>
+      <div>
+        <button type="button" data-quick-term="Android">Android</button>
+        <button type="button" data-quick-term="部署">部署</button>
+        <button type="button" data-quick-term="效率工具">效率工具</button>
+        <button type="button" data-quick-term="Cloudflare">Cloudflare</button>
+      </div>
+    </div>
+    <a class="quick-search-more" href="/search/">打开完整搜索页</a>
+  </section>
+</div>
+
 <script is:inline>
+  (() => {
   const toggle = document.querySelector('[data-theme-toggle]');
   const root = document.documentElement;
 
@@ -85,4 +118,184 @@ const isActive = (item: NavItem) =>
   });
 
   syncThemeButton();
+
+  const searchOpen = document.querySelector('[data-search-open]');
+  const searchDialog = document.querySelector('[data-search-dialog]');
+  const quickInput = document.querySelector('[data-quick-search-input]');
+  const quickResults = document.querySelector('[data-quick-search-results]');
+  const quickEmpty = document.querySelector('[data-quick-search-empty]');
+  const quickFilterButtons = document.querySelectorAll('[data-quick-filter]');
+  const quickTermButtons = document.querySelectorAll('[data-quick-term]');
+  const toolCategorySlugs = ['software', 'dev-tools', 'ai-tools'];
+  let quickIndexItems = [];
+  let quickFilter = 'all';
+  let quickDebounce;
+
+  const normalizeSearchValue = (value) => String(value ?? '').toLowerCase().trim();
+  const escapeSearchHtml = (value) =>
+    String(value ?? '').replace(/[&<>"']/g, (char) => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;'
+    })[char]);
+
+  const getSearchTerms = (query) => {
+    const normalized = normalizeSearchValue(query);
+    return normalized ? [...new Set(normalized.split(/\s+/).filter(Boolean))] : [];
+  };
+
+  const fuzzySearchIncludes = (text, term) => {
+    if (!term) return true;
+    if (text.includes(term)) return true;
+    let cursor = 0;
+    for (const char of term) {
+      cursor = text.indexOf(char, cursor);
+      if (cursor === -1) return false;
+      cursor += char.length;
+    }
+    return true;
+  };
+
+  const matchesSearchFilter = (item, filter) => {
+    if (filter === 'all') return true;
+    if (filter === 'resource') return item.kind === '资源';
+    if (filter === 'post') return item.kind === '文章';
+    if (filter === 'tools') return toolCategorySlugs.includes(item.category);
+    if (filter === 'websites') return item.category === 'websites';
+    return true;
+  };
+
+  const scoreSearchItem = (item, query) => {
+    const terms = getSearchTerms(query);
+    if (!terms.length) return 1;
+
+    const title = normalizeSearchValue(item.title);
+    const description = normalizeSearchValue(item.description);
+    const category = normalizeSearchValue(item.categoryName);
+    const tags = normalizeSearchValue((item.tags ?? []).join(' '));
+    const body = normalizeSearchValue(item.body);
+    const haystack = `${title} ${description} ${category} ${tags} ${body}`;
+    let score = 0;
+
+    for (const term of terms) {
+      if (!fuzzySearchIncludes(haystack, term)) return 0;
+      if (title === term) score += 120;
+      if (title.includes(term)) score += 80;
+      else if (fuzzySearchIncludes(title, term)) score += 52;
+      if (tags.includes(term)) score += 45;
+      if (category.includes(term)) score += 28;
+      if (description.includes(term)) score += 22;
+      if (body.includes(term)) score += 10;
+    }
+
+    return score;
+  };
+
+  const highlightSearchText = (value, query) => {
+    let output = escapeSearchHtml(value);
+    for (const term of getSearchTerms(query).sort((a, b) => b.length - a.length)) {
+      const escapedTerm = escapeSearchHtml(term).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      if (!escapedTerm) continue;
+      output = output.replace(new RegExp(escapedTerm, 'gi'), '<mark>$&</mark>');
+    }
+    return output;
+  };
+
+  const getSearchTargetUrl = (url, query) => {
+    const trimmed = String(query ?? '').trim();
+    if (!trimmed) return url;
+    const nextUrl = new URL(url, window.location.origin);
+    nextUrl.searchParams.set('highlight', trimmed);
+    return `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`;
+  };
+
+  const renderQuickSearch = () => {
+    if (!quickResults || !quickEmpty) return;
+    const query = quickInput instanceof HTMLInputElement ? quickInput.value : '';
+    const results = quickIndexItems
+      .filter((item) => matchesSearchFilter(item, quickFilter))
+      .map((item) => ({ item, score: scoreSearchItem(item, query) }))
+      .filter((result) => result.score > 0)
+      .sort((a, b) => b.score - a.score || b.item.updatedAt.localeCompare(a.item.updatedAt))
+      .slice(0, 6)
+      .map((result) => result.item);
+
+    quickEmpty.hidden = results.length > 0;
+    quickResults.innerHTML = results
+      .map(
+        (item) => `
+          <a class="quick-search-item" href="${escapeSearchHtml(getSearchTargetUrl(item.url, query))}">
+            <span>${escapeSearchHtml(item.categoryName)} · ${escapeSearchHtml(item.kind)}</span>
+            <strong>${highlightSearchText(item.title, query)}</strong>
+            <small>${highlightSearchText(item.description, query)}</small>
+          </a>
+        `
+      )
+      .join('');
+  };
+
+  const openQuickSearch = () => {
+    if (!searchDialog) return;
+    searchDialog.hidden = false;
+    document.body.classList.add('is-search-open');
+    if (!quickIndexItems.length) {
+      fetch('/search-index.json')
+        .then((response) => response.json())
+        .then((data) => {
+          quickIndexItems = Array.isArray(data.items) ? data.items : [];
+          renderQuickSearch();
+        })
+        .catch(() => renderQuickSearch());
+    } else {
+      renderQuickSearch();
+    }
+    window.setTimeout(() => {
+      if (quickInput instanceof HTMLInputElement) quickInput.focus();
+    }, 0);
+  };
+
+  const closeQuickSearch = () => {
+    if (!searchDialog) return;
+    searchDialog.hidden = true;
+    document.body.classList.remove('is-search-open');
+  };
+
+  searchOpen?.addEventListener('click', openQuickSearch);
+  document.querySelectorAll('[data-search-close]').forEach((button) => {
+    button.addEventListener('click', closeQuickSearch);
+  });
+
+  quickInput?.addEventListener('input', () => {
+    window.clearTimeout(quickDebounce);
+    quickDebounce = window.setTimeout(renderQuickSearch, 120);
+  });
+
+  quickFilterButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      quickFilter = button.getAttribute('data-quick-filter') ?? 'all';
+      quickFilterButtons.forEach((item) => item.classList.toggle('is-active', item === button));
+      renderQuickSearch();
+    });
+  });
+
+  quickTermButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      if (quickInput instanceof HTMLInputElement) {
+        quickInput.value = button.getAttribute('data-quick-term') ?? '';
+        quickInput.focus();
+      }
+      renderQuickSearch();
+    });
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !searchDialog?.hidden) closeQuickSearch();
+    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+      event.preventDefault();
+      openQuickSearch();
+    }
+  });
+  })();
 </script>

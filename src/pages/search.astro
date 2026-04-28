@@ -25,11 +25,24 @@ import SearchBox from '@/components/SearchBox.astro';
       <p data-search-summary>正在加载搜索索引...</p>
       <span data-search-count></span>
     </div>
+    <div class="search-filter-tabs" aria-label="搜索结果分类">
+      <button type="button" class="is-active" data-search-filter="all">全部</button>
+      <button type="button" data-search-filter="resource">资源</button>
+      <button type="button" data-search-filter="post">文章</button>
+      <button type="button" data-search-filter="tools">工具</button>
+      <button type="button" data-search-filter="websites">网站</button>
+    </div>
     <div class="search-results" data-search-results></div>
     <div class="search-empty" data-search-empty hidden>
       <span>⌕</span>
       <h2>没有找到相关内容</h2>
-      <p>换一个更短的关键词，或尝试搜索分类、标签、工具名称。</p>
+      <p>试试这些常用关键词，或者切换上方分类。</p>
+      <div class="search-empty-actions">
+        <button type="button" data-search-term="Android">Android</button>
+        <button type="button" data-search-term="部署">部署</button>
+        <button type="button" data-search-term="效率工具">效率工具</button>
+        <button type="button" data-search-term="Cloudflare">Cloudflare</button>
+      </div>
     </div>
     <noscript>
       <p class="empty-state">搜索功能需要启用 JavaScript。</p>
@@ -37,6 +50,7 @@ import SearchBox from '@/components/SearchBox.astro';
   </section>
 
   <script is:inline>
+    (() => {
     const form = document.querySelector('.search-panel');
     const input = document.querySelector('#site-search');
     const resultsEl = document.querySelector('[data-search-results]');
@@ -44,9 +58,12 @@ import SearchBox from '@/components/SearchBox.astro';
     const countEl = document.querySelector('[data-search-count]');
     const emptyEl = document.querySelector('[data-search-empty]');
     const suggestionButtons = document.querySelectorAll('[data-search-term]');
+    const filterButtons = document.querySelectorAll('[data-search-filter]');
     const params = new URLSearchParams(window.location.search);
     let indexItems = [];
     let debounceTimer;
+    let activeFilter = params.get('type') ?? 'all';
+    const toolCategorySlugs = ['software', 'dev-tools', 'ai-tools'];
 
     const normalize = (value) => String(value ?? '').toLowerCase().trim();
     const escapeHtml = (value) =>
@@ -61,6 +78,15 @@ import SearchBox from '@/components/SearchBox.astro';
     const getTerms = (query) => {
       const normalized = normalize(query);
       return normalized ? [...new Set(normalized.split(/\s+/).filter(Boolean))] : [];
+    };
+
+    const matchesFilter = (item, filter) => {
+      if (filter === 'all') return true;
+      if (filter === 'resource') return item.kind === '资源';
+      if (filter === 'post') return item.kind === '文章';
+      if (filter === 'tools') return toolCategorySlugs.includes(item.category);
+      if (filter === 'websites') return item.category === 'websites';
+      return true;
     };
 
     const fuzzyIncludes = (text, term) => {
@@ -101,6 +127,24 @@ import SearchBox from '@/components/SearchBox.astro';
       return score;
     };
 
+    const highlight = (value, query) => {
+      let output = escapeHtml(value);
+      for (const term of getTerms(query).sort((a, b) => b.length - a.length)) {
+        const escapedTerm = escapeHtml(term).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        if (!escapedTerm) continue;
+        output = output.replace(new RegExp(escapedTerm, 'gi'), '<mark>$&</mark>');
+      }
+      return output;
+    };
+
+    const getResultUrl = (url, query) => {
+      const trimmed = String(query ?? '').trim();
+      if (!trimmed) return url;
+      const nextUrl = new URL(url, window.location.origin);
+      nextUrl.searchParams.set('highlight', trimmed);
+      return `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`;
+    };
+
     const getExcerpt = (item, query) => {
       const text = item.description || item.body || '这条内容暂时没有补充说明。';
       const term = getTerms(query)[0];
@@ -113,13 +157,13 @@ import SearchBox from '@/components/SearchBox.astro';
 
     const renderResults = (query) => {
       const normalizedQuery = normalize(query);
-      const results = normalizedQuery
-        ? indexItems
-            .map((item) => ({ item, score: scoreItem(item, normalizedQuery) }))
-            .filter((result) => result.score > 0)
-            .sort((a, b) => b.score - a.score || b.item.updatedAt.localeCompare(a.item.updatedAt))
-            .map((result) => result.item)
-        : indexItems.slice(0, 8);
+      const results = indexItems
+        .filter((item) => matchesFilter(item, activeFilter))
+        .map((item) => ({ item, score: normalizedQuery ? scoreItem(item, normalizedQuery) : 1 }))
+        .filter((result) => result.score > 0)
+        .sort((a, b) => b.score - a.score || b.item.updatedAt.localeCompare(a.item.updatedAt))
+        .map((result) => result.item)
+        .slice(0, normalizedQuery ? 40 : 12);
 
       if (summaryEl) {
         summaryEl.textContent = normalizedQuery ? `搜索 “${query}”` : '最近更新';
@@ -150,8 +194,8 @@ import SearchBox from '@/components/SearchBox.astro';
                 <time>${escapeHtml(item.updatedAt)}</time>
                 ${item.protected ? '<span>需要密码</span>' : ''}
               </div>
-              <h2><a href="${escapeHtml(item.url)}">${escapeHtml(item.title)}</a></h2>
-              <p>${escapeHtml(getExcerpt(item, normalizedQuery))}</p>
+              <h2><a href="${escapeHtml(getResultUrl(item.url, normalizedQuery))}">${highlight(item.title, normalizedQuery)}</a></h2>
+              <p>${highlight(getExcerpt(item, normalizedQuery), normalizedQuery)}</p>
               <div class="search-result-tags">${tags}</div>
             </article>
           `;
@@ -165,6 +209,8 @@ import SearchBox from '@/components/SearchBox.astro';
         const next = new URL(window.location.href);
         if (value.trim()) next.searchParams.set('q', value.trim());
         else next.searchParams.delete('q');
+        if (activeFilter !== 'all') next.searchParams.set('type', activeFilter);
+        else next.searchParams.delete('type');
         history.replaceState(null, '', next);
       }
       renderResults(value);
@@ -189,6 +235,16 @@ import SearchBox from '@/components/SearchBox.astro';
       });
     });
 
+    filterButtons.forEach((button) => {
+      const filter = button.getAttribute('data-search-filter') ?? 'all';
+      button.classList.toggle('is-active', filter === activeFilter);
+      button.addEventListener('click', () => {
+        activeFilter = filter;
+        filterButtons.forEach((item) => item.classList.toggle('is-active', item === button));
+        setQuery(input instanceof HTMLInputElement ? input.value : '');
+      });
+    });
+
     fetch('/search-index.json')
       .then((response) => {
         if (!response.ok) throw new Error(`Search index failed: ${response.status}`);
@@ -203,5 +259,6 @@ import SearchBox from '@/components/SearchBox.astro';
         if (countEl) countEl.textContent = '';
         if (emptyEl) emptyEl.hidden = false;
       });
+    })();
   </script>
 </BaseLayout>
