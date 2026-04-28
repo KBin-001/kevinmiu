@@ -15,6 +15,8 @@ export type ContentItem = {
   featured: boolean;
   url: string;
   sourceUrl?: string;
+  attachments: string[];
+  accessProtected: boolean;
 };
 
 export type PostEntry = CollectionEntry<'posts'>;
@@ -50,7 +52,9 @@ export function toContentItem(entry: PostEntry | ResourceEntry, kind: ContentKin
     updatedAt: entry.data.updatedAt,
     featured: entry.data.featured,
     url: kind === 'post' ? `/posts/${routeSlug}/` : `/resources/${routeSlug}/`,
-    sourceUrl: kind === 'resource' ? (entry as ResourceEntry).data.url : undefined
+    sourceUrl: kind === 'resource' ? (entry as ResourceEntry).data.url : undefined,
+    attachments: entry.data.attachments,
+    accessProtected: entry.data.accessProtected
   };
 }
 

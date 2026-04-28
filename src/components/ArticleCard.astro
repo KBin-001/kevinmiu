@@ -13,6 +13,11 @@ const item = Astro.props.item;
 const variant = Astro.props.variant ?? 'grid';
 const rank = Astro.props.index !== undefined ? String(Astro.props.index + 1).padStart(2, '0') : undefined;
 const kindLabel = item.kind === 'post' ? '文章' : '资源';
+const cardBadges = [
+  item.accessProtected && { label: '密码访问', icon: 'lock' },
+  item.attachments.length > 0 && { label: '含附件', icon: 'paperclip' },
+  item.sourceUrl && { label: '外链资源', icon: 'external' }
+].filter(Boolean) as { label: string; icon: 'lock' | 'paperclip' | 'external' }[];
 ---
 
 <article class:list={['content-card', `is-${variant}`]} data-category={item.category} data-kind={item.kind} data-pagefind-body>
@@ -23,6 +28,34 @@ const kindLabel = item.kind === 'post' ? '文章' : '资源';
       <span>{kindLabel}</span>
       <span aria-hidden="true">·</span>
       <time datetime={item.updatedAt.toISOString()}>{formatDate(item.updatedAt)}</time>
+      {
+        cardBadges.length > 0 && (
+          <span class="card-status-list" aria-label="内容属性">
+            {cardBadges.map((badge) => (
+              <span class="card-status" aria-label={badge.label} title={badge.label}>
+                {badge.icon === 'lock' && (
+                  <svg aria-hidden="true" viewBox="0 0 24 24">
+                    <path d="M7 10V8a5 5 0 0 1 10 0v2" />
+                    <rect x="5" y="10" width="14" height="10" rx="2" />
+                    <path d="M12 14v2" />
+                  </svg>
+                )}
+                {badge.icon === 'paperclip' && (
+                  <svg aria-hidden="true" viewBox="0 0 24 24">
+                    <path d="m21.4 11.6-8.8 8.8a6 6 0 0 1-8.5-8.5l9.2-9.2a4 4 0 0 1 5.7 5.7l-9.2 9.2a2 2 0 0 1-2.8-2.8l8.8-8.8" />
+                  </svg>
+                )}
+                {badge.icon === 'external' && (
+                  <svg aria-hidden="true" viewBox="0 0 24 24">
+                    <path d="M7 17 17 7" />
+                    <path d="M9 7h8v8" />
+                  </svg>
+                )}
+              </span>
+            ))}
+          </span>
+        )
+      }
     </div>
     <h3><a href={item.url}>{item.title}</a></h3>
     <p>{item.description}</p>
