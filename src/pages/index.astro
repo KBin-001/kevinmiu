@@ -11,7 +11,7 @@ const latestUpdatedAt = items[0]?.updatedAt;
 const featuredItems = items.filter((item) => item.featured).slice(0, 3);
 const featured = featuredItems.length > 0 ? featuredItems : items.slice(0, 3);
 const featuredUrls = new Set(featured.map((item) => item.url));
-const latest = items.filter((item) => !featuredUrls.has(item.url)).slice(0, 8);
+const latest = items.filter((item) => !featuredUrls.has(item.url));
 const tags = getAllTags(items).slice(0, 5);
 ---
 

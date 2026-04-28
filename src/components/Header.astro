@@ -102,8 +102,13 @@ const isActive = (item: NavItem) =>
 
 <script is:inline>
   (() => {
+  const header = document.querySelector('.site-header');
   const toggle = document.querySelector('[data-theme-toggle]');
   const root = document.documentElement;
+
+  function syncHeaderState() {
+    header?.classList.toggle('is-compact', window.scrollY > 24);
+  }
 
   function syncThemeButton() {
     const isDark = root.dataset.theme === 'dark';
@@ -118,6 +123,8 @@ const isActive = (item: NavItem) =>
   });
 
   syncThemeButton();
+  syncHeaderState();
+  window.addEventListener('scroll', syncHeaderState, { passive: true });
 
   const searchOpen = document.querySelector('[data-search-open]');
   const searchDialog = document.querySelector('[data-search-dialog]');

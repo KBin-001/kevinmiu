@@ -28,7 +28,19 @@ const items = (await getAllContentItems()).filter((item) => item.category === ca
           {items.map((item) => <ArticleCard item={item} />)}
         </div>
       ) : (
-        <p class="empty-state">这个分类还没有发布内容。</p>
+        <div class="empty-state category-empty-state">
+          <div class="empty-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v11A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5v-11Z" />
+              <path d="M8 8h8M8 12h5M8 16h6" />
+            </svg>
+          </div>
+          <div>
+            <strong>{category.name}暂未发布内容</strong>
+            <span>内容发布后会自动出现在这里。你也可以先浏览全部资源和文章。</span>
+          </div>
+          <a href="/search/">查看全部内容</a>
+        </div>
       )
     }
   </section>

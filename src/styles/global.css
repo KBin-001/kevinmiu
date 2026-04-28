@@ -202,6 +202,16 @@ svg {
   border-bottom: 1px solid var(--border);
   background: color-mix(in srgb, var(--surface-raised) 86%, transparent);
   backdrop-filter: blur(20px) saturate(150%);
+  transition:
+    background-color var(--transition),
+    box-shadow var(--transition),
+    border-color var(--transition);
+}
+
+.site-header.is-compact {
+  border-color: color-mix(in srgb, var(--border-strong) 76%, transparent);
+  background: color-mix(in srgb, var(--surface-raised) 92%, transparent);
+  box-shadow: 0 10px 34px color-mix(in srgb, var(--text) 7%, transparent);
 }
 
 .nav-bar {
@@ -210,6 +220,13 @@ svg {
   min-height: 72px;
   align-items: center;
   gap: 24px;
+  transition:
+    min-height var(--transition),
+    padding var(--transition);
+}
+
+.site-header.is-compact .nav-bar {
+  min-height: 60px;
 }
 
 .brand {
@@ -221,6 +238,7 @@ svg {
   font-size: 20px;
   font-weight: 750;
   letter-spacing: -0.02em;
+  transition: font-size var(--transition);
 }
 
 .brand-logo {
@@ -230,6 +248,20 @@ svg {
   border-radius: 12px;
   object-fit: cover;
   box-shadow: var(--shadow-sm);
+  transition:
+    width var(--transition),
+    height var(--transition),
+    border-radius var(--transition);
+}
+
+.site-header.is-compact .brand {
+  font-size: 18px;
+}
+
+.site-header.is-compact .brand-logo {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
 }
 
 .primary-nav,
@@ -1025,6 +1057,16 @@ svg {
   font-size: 22px;
 }
 
+.empty-icon svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
 .empty-state strong {
   display: block;
   color: var(--text);
@@ -1050,9 +1092,30 @@ svg {
   font-weight: 750;
 }
 
-.empty-state button:hover {
+.empty-state a {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--brand);
+  border-radius: var(--radius-pill);
+  background: var(--brand);
+  padding: 0 16px;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.empty-state button:hover,
+.empty-state a:hover {
+  color: #ffffff;
   transform: translateY(-1px);
   box-shadow: 0 12px 26px color-mix(in srgb, var(--brand) 24%, transparent);
+}
+
+.category-empty-state {
+  margin: 0;
 }
 
 .site-footer {
@@ -1066,7 +1129,7 @@ svg {
 
 .footer-inner {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(280px, 1fr) minmax(420px, 520px);
   align-items: center;
   gap: 40px;
   padding: 42px 0 28px;
@@ -1103,8 +1166,11 @@ svg {
 
 .footer-links {
   display: grid;
-  grid-template-columns: repeat(2, minmax(130px, auto));
-  gap: 44px;
+  grid-template-columns: minmax(150px, 1fr) minmax(220px, 1fr);
+  column-gap: 56px;
+  row-gap: 24px;
+  justify-self: end;
+  width: 100%;
 }
 
 .footer-links div {
@@ -1123,12 +1189,32 @@ svg {
 
 .footer-links a,
 .footer-bottom a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   color: var(--text-muted);
+  transition: color 0.2s ease;
+}
+
+.footer-links a svg {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 auto;
+  color: var(--text-subtle);
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
   transition: color 0.2s ease;
 }
 
 .footer-links a:hover,
 .footer-bottom a:hover {
+  color: var(--brand-strong);
+}
+
+.footer-links a:hover svg {
   color: var(--brand-strong);
 }
 
@@ -1284,17 +1370,84 @@ svg {
   line-height: 1.85;
 }
 
+.prose > *:first-child {
+  margin-top: 0;
+}
+
+.prose > *:last-child {
+  margin-bottom: 0;
+}
+
+.prose p {
+  margin: 16px 0;
+}
+
 .prose h2 {
-  margin: 36px 0 10px;
+  margin: 42px 0 12px;
   color: var(--text);
   font-size: 26px;
+  font-weight: 760;
   letter-spacing: -0.02em;
   line-height: 1.25;
+}
+
+.prose h3 {
+  margin: 32px 0 10px;
+  color: var(--text);
+  font-size: 21px;
+  font-weight: 720;
+  letter-spacing: -0.015em;
+  line-height: 1.35;
+}
+
+.prose h4 {
+  margin: 26px 0 8px;
+  color: var(--text);
+  font-size: 17px;
+  font-weight: 720;
+  line-height: 1.45;
 }
 
 .prose a {
   border-bottom: 1px solid var(--brand);
   color: var(--brand-strong);
+}
+
+.prose a:hover {
+  border-color: var(--brand-strong);
+  color: var(--brand-strong);
+}
+
+.prose ul,
+.prose ol {
+  margin: 16px 0;
+  padding-left: 1.45em;
+}
+
+.prose li {
+  margin: 6px 0;
+  padding-left: 0.2em;
+}
+
+.prose li::marker {
+  color: var(--text-subtle);
+}
+
+.prose blockquote {
+  margin: 24px 0;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--brand);
+  border-radius: var(--radius-sm);
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--brand) 8%, transparent), transparent 55%),
+    color-mix(in srgb, var(--surface-raised) 78%, transparent);
+  padding: 16px 18px;
+  color: var(--text-secondary);
+  box-shadow: var(--shadow-sm);
+}
+
+.prose blockquote p {
+  margin: 0;
 }
 
 .resource-action-card {
@@ -1397,17 +1550,26 @@ svg {
   border-radius: 8px;
   background: var(--surface-soft);
   padding: 2px 6px;
-  color: var(--text);
+  color: var(--brand-strong);
   font-size: 0.92em;
+  font-family: var(--font-mono);
+  word-break: break-word;
 }
 
 .prose pre {
   overflow-x: auto;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: var(--surface-soft);
+  margin: 22px 0;
+  border: 1px solid color-mix(in srgb, var(--border-strong) 74%, transparent);
+  border-radius: 14px;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--surface) 8%, transparent), transparent),
+    color-mix(in srgb, var(--surface-soft) 72%, #0f172a 28%);
   padding: 18px 20px;
-  color: var(--text-secondary);
+  color: var(--text);
+  box-shadow:
+    0 16px 38px color-mix(in srgb, var(--text) 7%, transparent),
+    0 1px 0 color-mix(in srgb, #ffffff 58%, transparent) inset;
+  tab-size: 2;
 }
 
 .prose pre code {
@@ -1416,6 +1578,53 @@ svg {
   background: transparent;
   padding: 0;
   color: inherit;
+  font-size: 13px;
+  line-height: 1.75;
+  word-break: normal;
+}
+
+.prose table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  margin: 24px 0;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  border-spacing: 0;
+  background: color-mix(in srgb, var(--surface-raised) 86%, transparent);
+  box-shadow: var(--shadow-sm);
+}
+
+.prose th,
+.prose td {
+  border-bottom: 1px solid var(--border);
+  padding: 12px 14px;
+  text-align: left;
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+.prose th {
+  background: color-mix(in srgb, var(--surface-soft) 88%, transparent);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.prose td {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.prose tr:last-child td {
+  border-bottom: 0;
+}
+
+.prose hr {
+  height: 1px;
+  margin: 34px 0;
+  border: 0;
+  background: var(--border);
 }
 
 .prose img {
@@ -2059,6 +2268,11 @@ svg {
     justify-items: center;
     gap: 12px;
     padding: 16px 0;
+  }
+
+  .site-header.is-compact .nav-bar {
+    gap: 8px;
+    padding: 10px 0;
   }
 
   .brand {
