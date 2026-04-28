@@ -79,6 +79,11 @@ const tags = getAllTags(items).slice(0, 5);
           <div class="card-grid latest-grid" data-filter-grid>
             {latest.map((item) => <ArticleCard item={item} variant="stream" />)}
           </div>
+          <nav class="latest-pagination" aria-label="最新内容分页" data-pagination hidden>
+            <button type="button" data-page-prev>上一页</button>
+            <span data-page-status>第 1 / 1 页</span>
+            <button type="button" data-page-next>下一页</button>
+          </nav>
           <div class="empty-state latest-empty" data-filter-empty hidden>
             <div class="empty-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24">
@@ -115,37 +120,94 @@ const tags = getAllTags(items).slice(0, 5);
     const grid = document.querySelector('[data-filter-grid]');
     const empty = document.querySelector('[data-filter-empty]');
     const reset = document.querySelector('[data-filter-reset]');
+    const pagination = document.querySelector('[data-pagination]');
+    const pagePrev = document.querySelector('[data-page-prev]');
+    const pageNext = document.querySelector('[data-page-next]');
+    const pageStatus = document.querySelector('[data-page-status]');
     const tabs = Array.from(tabRoot?.querySelectorAll('[data-filter]') ?? []);
     const cards = Array.from(grid?.querySelectorAll('[data-category]') ?? []);
     const toolCategories = ['software', 'dev-tools', 'ai-tools'];
+    const pageSize = 9;
+    let activeFilter = 'all';
+    let currentPage = 1;
 
-    function applyFilter(filter) {
-      let visibleCount = 0;
-      cards.forEach((card) => {
+    function getMatchedCards(filter) {
+      return cards.filter((card) => {
         const category = card.getAttribute('data-category');
         const kind = card.getAttribute('data-kind');
-        const visible =
+        return (
           filter === 'all' ||
           category === filter ||
           kind === filter ||
-          (filter === 'tools' && toolCategories.includes(category ?? ''));
-        card.toggleAttribute('hidden', !visible);
-        if (visible) visibleCount += 1;
+          (filter === 'tools' && toolCategories.includes(category ?? ''))
+        );
       });
-      empty?.toggleAttribute('hidden', visibleCount !== 0);
+    }
+
+    function renderLatest() {
+      const matchedCards = getMatchedCards(activeFilter);
+      const totalPages = Math.max(1, Math.ceil(matchedCards.length / pageSize));
+      currentPage = Math.min(currentPage, totalPages);
+      currentPage = Math.max(1, currentPage);
+      const start = (currentPage - 1) * pageSize;
+      const end = start + pageSize;
+      const visibleCards = new Set(matchedCards.slice(start, end));
+
+      cards.forEach((card) => {
+        card.toggleAttribute('hidden', !visibleCards.has(card));
+      });
+
+      empty?.toggleAttribute('hidden', matchedCards.length !== 0);
+
+      if (pagination) {
+        const shouldShowPagination = matchedCards.length > pageSize;
+        pagination.toggleAttribute('hidden', !shouldShowPagination);
+      }
+
+      if (pageStatus) {
+        pageStatus.textContent = `第 ${currentPage} / ${totalPages} 页`;
+      }
+
+      if (pagePrev instanceof HTMLButtonElement) {
+        pagePrev.disabled = currentPage <= 1;
+      }
+
+      if (pageNext instanceof HTMLButtonElement) {
+        pageNext.disabled = currentPage >= totalPages;
+      }
+    }
+
+    function setFilter(filter) {
+      activeFilter = filter;
+      currentPage = 1;
+      renderLatest();
     }
 
     tabs.forEach((tab) => {
       tab.addEventListener('click', () => {
         tabs.forEach((item) => item.classList.toggle('is-active', item === tab));
-        applyFilter(tab.getAttribute('data-filter') ?? 'all');
+        setFilter(tab.getAttribute('data-filter') ?? 'all');
       });
+    });
+
+    pagePrev?.addEventListener('click', () => {
+      currentPage = Math.max(1, currentPage - 1);
+      renderLatest();
+      document.querySelector('#latest')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    pageNext?.addEventListener('click', () => {
+      currentPage += 1;
+      renderLatest();
+      document.querySelector('#latest')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
 
     reset?.addEventListener('click', () => {
       const allTab = tabs.find((tab) => tab.getAttribute('data-filter') === 'all');
       tabs.forEach((item) => item.classList.toggle('is-active', item === allTab));
-      applyFilter('all');
+      setFilter('all');
     });
+
+    renderLatest();
   </script>
 </BaseLayout>
