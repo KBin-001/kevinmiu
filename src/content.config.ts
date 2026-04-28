@@ -13,6 +13,7 @@ const commonSchema = z.object({
   featured: z.boolean().default(false),
   draft: z.boolean().default(false),
   cover: z.string().optional(),
+  attachments: z.union([z.array(z.string()), z.string().transform((value) => [value])]).default([]),
   accessProtected: z.boolean().default(false),
   accessPassword: z.string().optional()
 });

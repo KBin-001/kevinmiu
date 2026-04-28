@@ -12,15 +12,32 @@ type Props = {
   publishedAt: Date;
   updatedAt: Date;
   cover?: string;
+  attachments?: string[];
   accessProtected?: boolean;
   accessPassword?: string;
 };
 
 const isAccessProtected = Boolean(Astro.props.accessProtected && Astro.props.accessPassword);
+const attachments = Astro.props.attachments ?? [];
 const accessPasswordHash = isAccessProtected
   ? createHash('sha256').update(Astro.props.accessPassword ?? '').digest('hex')
   : '';
 const accessStorageKey = `kevinmiu:access:${Astro.url.pathname}`;
+
+function getAttachmentName(file: string) {
+  const name = file.split('/').filter(Boolean).pop() ?? file;
+  try {
+    return decodeURIComponent(name);
+  } catch {
+    return name;
+  }
+}
+
+function getAttachmentExt(file: string) {
+  const name = getAttachmentName(file);
+  const ext = name.includes('.') ? name.split('.').pop() : '';
+  return ext?.toUpperCase() || 'FILE';
+}
 ---
 
 <BaseLayout title={Astro.props.title} description={Astro.props.description} noindex={isAccessProtected}>
@@ -79,6 +96,30 @@ const accessStorageKey = `kevinmiu:access:${Astro.url.pathname}`;
           <figure class="prose-cover">
             <img src={Astro.props.cover} alt="" loading="eager" decoding="async" />
           </figure>
+        )
+      }
+      {
+        attachments.length > 0 && (
+          <section class="attachment-panel" aria-label="附件下载">
+            <div class="attachment-panel-head">
+              <span>Attachments</span>
+              <h2>附件下载</h2>
+            </div>
+            <div class="attachment-list">
+              {attachments.map((file) => (
+                <a class="attachment-item" href={file} download>
+                  <span class="attachment-icon">{getAttachmentExt(file)}</span>
+                  <span class="attachment-info">
+                    <strong>{getAttachmentName(file)}</strong>
+                    <small>点击下载附件</small>
+                  </span>
+                  <span class="attachment-arrow" aria-hidden="true">
+                    ↓
+                  </span>
+                </a>
+              ))}
+            </div>
+          </section>
         )
       }
       <slot />

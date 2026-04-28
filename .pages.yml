@@ -1,7 +1,7 @@
 media:
   input: public/images
   output: /images
-  categories: [image]
+  categories: [image, document, compressed, spreadsheet, code]
   rename: safe
 
 content:
@@ -66,6 +66,14 @@ content:
             label: 正文首图
             type: image
             description: 不在首页卡片显示，只会在文章详情正文顶部显示。
+          - name: attachments
+            label: 附件
+            type: file
+            description: 可选。上传 PDF、ZIP、文档、表格、代码包等附件，前台会显示为下载卡片。
+            options:
+              multiple: true
+              path: attachments
+              categories: [document, compressed, spreadsheet, code, image]
           - name: publishedAt
             label: 发布时间
             type: date
@@ -167,6 +175,14 @@ content:
             label: 正文首图
             type: image
             description: 不在首页卡片显示，只会在详情正文顶部显示；没有图也可以不填。
+          - name: attachments
+            label: 附件
+            type: file
+            description: 可选。上传 PDF、ZIP、文档、表格、代码包等附件，前台会显示为下载卡片。
+            options:
+              multiple: true
+              path: attachments
+              categories: [document, compressed, spreadsheet, code, image]
           - name: publishedAt
             label: 发布时间
             type: date

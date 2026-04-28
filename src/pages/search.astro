@@ -3,41 +3,205 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import SearchBox from '@/components/SearchBox.astro';
 ---
 
-<BaseLayout title="站内搜索" description="搜索本站收录的资源福利、软件工具、开发工具、AI 工具、网站导航、教程文章和资讯动态。">
-  <section class="container page-head">
-    <p class="eyebrow">搜索</p>
+<BaseLayout
+  title="站内搜索"
+  description="搜索本站收录的资源福利、软件工具、开发工具、AI 工具、网站导航、教程文章和资讯动态。"
+>
+  <section class="container page-head search-head">
+    <p class="eyebrow">Search</p>
     <h1>站内搜索</h1>
     <p>输入关键词，快速定位资源、教程、分类和标签。</p>
     <SearchBox compact />
+    <div class="search-suggestions" aria-label="热门搜索">
+      <button type="button" data-search-term="Android">Android</button>
+      <button type="button" data-search-term="部署">部署</button>
+      <button type="button" data-search-term="效率工具">效率工具</button>
+      <button type="button" data-search-term="Cloudflare">Cloudflare</button>
+    </div>
   </section>
-  <section class="container section-block">
-    <div id="search"></div>
+
+  <section class="container search-results-shell">
+    <div class="search-results-toolbar">
+      <p data-search-summary>正在加载搜索索引...</p>
+      <span data-search-count></span>
+    </div>
+    <div class="search-results" data-search-results></div>
+    <div class="search-empty" data-search-empty hidden>
+      <span>⌕</span>
+      <h2>没有找到相关内容</h2>
+      <p>换一个更短的关键词，或尝试搜索分类、标签、工具名称。</p>
+    </div>
     <noscript>
       <p class="empty-state">搜索功能需要启用 JavaScript。</p>
     </noscript>
   </section>
-  <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
-  <script is:inline src="/pagefind/pagefind-ui.js"></script>
+
   <script is:inline>
+    const form = document.querySelector('.search-panel');
+    const input = document.querySelector('#site-search');
+    const resultsEl = document.querySelector('[data-search-results]');
+    const summaryEl = document.querySelector('[data-search-summary]');
+    const countEl = document.querySelector('[data-search-count]');
+    const emptyEl = document.querySelector('[data-search-empty]');
+    const suggestionButtons = document.querySelectorAll('[data-search-term]');
     const params = new URLSearchParams(window.location.search);
-    const query = params.get('q') ?? '';
-    new window.PagefindUI({
-      element: '#search',
-      showSubResults: true,
-      showImages: false,
-      translations: {
-        placeholder: '搜索本站内容'
+    let indexItems = [];
+    let debounceTimer;
+
+    const normalize = (value) => String(value ?? '').toLowerCase().trim();
+    const escapeHtml = (value) =>
+      String(value ?? '').replace(/[&<>"']/g, (char) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+      })[char]);
+
+    const getTerms = (query) => {
+      const normalized = normalize(query);
+      return normalized ? [...new Set(normalized.split(/\s+/).filter(Boolean))] : [];
+    };
+
+    const fuzzyIncludes = (text, term) => {
+      if (!term) return true;
+      if (text.includes(term)) return true;
+      let cursor = 0;
+      for (const char of term) {
+        cursor = text.indexOf(char, cursor);
+        if (cursor === -1) return false;
+        cursor += char.length;
       }
+      return true;
+    };
+
+    const scoreItem = (item, query) => {
+      const terms = getTerms(query);
+      if (!terms.length) return 0;
+
+      const title = normalize(item.title);
+      const description = normalize(item.description);
+      const category = normalize(item.categoryName);
+      const tags = normalize(item.tags.join(' '));
+      const body = normalize(item.body);
+      const haystack = `${title} ${description} ${category} ${tags} ${body}`;
+      let score = 0;
+
+      for (const term of terms) {
+        if (!fuzzyIncludes(haystack, term)) return 0;
+        if (title === term) score += 120;
+        if (title.includes(term)) score += 80;
+        else if (fuzzyIncludes(title, term)) score += 52;
+        if (tags.includes(term)) score += 45;
+        if (category.includes(term)) score += 28;
+        if (description.includes(term)) score += 22;
+        if (body.includes(term)) score += 10;
+      }
+
+      return score;
+    };
+
+    const getExcerpt = (item, query) => {
+      const text = item.description || item.body || '这条内容暂时没有补充说明。';
+      const term = getTerms(query)[0];
+      const lowerText = normalize(text);
+      const index = term ? lowerText.indexOf(term) : -1;
+
+      if (index <= 24) return text.slice(0, 110);
+      return `...${text.slice(Math.max(0, index - 28), index + 86)}`;
+    };
+
+    const renderResults = (query) => {
+      const normalizedQuery = normalize(query);
+      const results = normalizedQuery
+        ? indexItems
+            .map((item) => ({ item, score: scoreItem(item, normalizedQuery) }))
+            .filter((result) => result.score > 0)
+            .sort((a, b) => b.score - a.score || b.item.updatedAt.localeCompare(a.item.updatedAt))
+            .map((result) => result.item)
+        : indexItems.slice(0, 8);
+
+      if (summaryEl) {
+        summaryEl.textContent = normalizedQuery ? `搜索 “${query}”` : '最近更新';
+      }
+
+      if (countEl) {
+        countEl.textContent = `${results.length} 条结果`;
+      }
+
+      if (emptyEl) {
+        emptyEl.hidden = results.length > 0;
+      }
+
+      if (!resultsEl) return;
+
+      resultsEl.innerHTML = results
+        .map((item) => {
+          const tags = item.tags
+            .slice(0, 4)
+            .map((tag) => `<span>${escapeHtml(tag)}</span>`)
+            .join('');
+
+          return `
+            <article class="search-result-card">
+              <div class="search-result-meta">
+                <span>${escapeHtml(item.categoryName)}</span>
+                <span>${escapeHtml(item.kind)}</span>
+                <time>${escapeHtml(item.updatedAt)}</time>
+                ${item.protected ? '<span>需要密码</span>' : ''}
+              </div>
+              <h2><a href="${escapeHtml(item.url)}">${escapeHtml(item.title)}</a></h2>
+              <p>${escapeHtml(getExcerpt(item, normalizedQuery))}</p>
+              <div class="search-result-tags">${tags}</div>
+            </article>
+          `;
+        })
+        .join('');
+    };
+
+    const setQuery = (value, updateUrl = true) => {
+      if (input instanceof HTMLInputElement) input.value = value;
+      if (updateUrl) {
+        const next = new URL(window.location.href);
+        if (value.trim()) next.searchParams.set('q', value.trim());
+        else next.searchParams.delete('q');
+        history.replaceState(null, '', next);
+      }
+      renderResults(value);
+    };
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      setQuery(input instanceof HTMLInputElement ? input.value : '');
     });
 
-    if (query) {
-      window.setTimeout(() => {
-        const input = document.querySelector('.pagefind-ui__search-input');
-        if (input instanceof HTMLInputElement) {
-          input.value = query;
-          input.dispatchEvent(new Event('input', { bubbles: true }));
-        }
-      }, 100);
-    }
+    input?.addEventListener('input', () => {
+      window.clearTimeout(debounceTimer);
+      debounceTimer = window.setTimeout(() => {
+        setQuery(input instanceof HTMLInputElement ? input.value : '');
+      }, 160);
+    });
+
+    suggestionButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        setQuery(button.getAttribute('data-search-term') ?? '');
+        input?.focus();
+      });
+    });
+
+    fetch('/search-index.json')
+      .then((response) => {
+        if (!response.ok) throw new Error(`Search index failed: ${response.status}`);
+        return response.json();
+      })
+      .then((data) => {
+        indexItems = Array.isArray(data.items) ? data.items : [];
+        setQuery(params.get('q') ?? '', false);
+      })
+      .catch(() => {
+        if (summaryEl) summaryEl.textContent = '搜索索引加载失败';
+        if (countEl) countEl.textContent = '';
+        if (emptyEl) emptyEl.hidden = false;
+      });
   </script>
 </BaseLayout>
