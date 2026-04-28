@@ -386,7 +386,7 @@ svg {
   position: relative;
   display: grid;
   justify-items: center;
-  padding: 112px 0 96px;
+  padding: 66px 0 34px;
   text-align: center;
 }
 
@@ -430,7 +430,7 @@ svg {
 
 .hero-center > p:not(.eyebrow) {
   max-width: 680px;
-  margin: 24px 0 0;
+  margin: 14px 0 0;
   color: var(--text-secondary);
   font-size: 19px;
   line-height: 1.75;
@@ -438,7 +438,7 @@ svg {
 
 .search-panel {
   width: min(760px, 100%);
-  margin-top: 34px;
+  margin-top: 18px;
 }
 
 .search-panel.compact {
@@ -525,7 +525,7 @@ svg {
   flex-wrap: wrap;
   justify-content: center;
   gap: 8px;
-  margin-top: 20px;
+  margin-top: 10px;
   color: var(--text-muted);
   font-size: 14px;
 }
@@ -559,7 +559,7 @@ svg {
 }
 
 .featured-section {
-  padding-top: 96px;
+  padding-top: 28px;
 }
 
 .latest-section {
@@ -1660,7 +1660,7 @@ svg {
   }
 
   .hero-center {
-    padding: 68px 0 58px;
+    padding: 34px 0 24px;
   }
 
   .hero-center h1 {
@@ -1691,7 +1691,7 @@ svg {
 
   .section-block,
   .featured-section {
-    padding: 54px 0;
+    padding: 30px 0;
   }
 
   .latest-section {
